@@ -7,9 +7,18 @@
 </head>
 <body>
   <div id="content">
-    <h1>Hello World!</h1>
+    <form>
+      <label for="comment">Comment:</label>
+      <textarea name="comment" id="comment-text"></textarea>
+      <br/><br/>
+
+      <input type="button" value="Is this Toxic?" onclick="getToxicity()"/>
+    </form>
+
+    <p id="toxicity-container"></p>
   </div>
 
   <script src="scripts/script.js"></script>
+  <script src="scripts/perspective.js"></script>
 </body>
 </html>
