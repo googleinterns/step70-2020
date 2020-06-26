@@ -28,12 +28,11 @@ public class YouTubeServlet extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String commentsStr = request.getReader().lines().collect(Collectors.joining());
+        String commentsStr =
+            request.getReader().lines().collect(Collectors.joining());
         Gson gson = new Gson();
         String[] commentsArr = gson.fromJson(commentsStr, String[].class);
         List<String> commentsList = Arrays.asList(commentsArr);
         video = new Video(commentsList);
-
-        response.sendRedirect("/index.html");
     }
 }

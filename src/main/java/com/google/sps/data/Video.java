@@ -19,12 +19,7 @@ public class Video {
 
     // Concatenates all Strings of comments into one String.
     private String convertListToString(List<String> list) {
-        String str = "";
-        for (String text : list) {
-            str = str.concat(text + ". ");
-        }
-
-        return str;
+        return String.join(". ", list);
     }
 
     // Calculates sentiment score of text. The score is from -1 (negative) to +1 (positive).
