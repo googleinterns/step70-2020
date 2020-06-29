@@ -14,12 +14,7 @@ public class Video {
   public Video(List<String> comments/*, List<String> captions*/) throws IOException {
     // Can add captions functionality later on.
     this.comments = comments;
-    this.commentScore = calculateSentimentScore(convertListToString(comments));
-  }
-
-  // Concatenates all Strings of comments into one String.
-  private String convertListToString(List<String> list) {
-    return String.join(". ", list);
+    this.commentScore = calculateSentimentScore(String.join(". ", comments));
   }
 
   // Calculates sentiment score of text. The score is from -1 (negative) to +1 (positive).
