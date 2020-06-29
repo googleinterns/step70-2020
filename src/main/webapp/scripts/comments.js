@@ -18,10 +18,11 @@ function getComments(callback) {
   
   try {
     const request = gapi.client.youtube.commentThreads.list({
-      'part': ['snippet,replies'],
-      'maxResults': 100,
+      'part': ['snippet'],
+      'maxResults': 25,
+      'order': 'relevance',
       'textFormat': 'plainText',
-      'videoId': '2eFSU7TFOnk' //<- sample video for now
+      'videoId': 'kNovwPIWr3Q' //<- sample video for now
     });
         
     return request.execute(function(response) {
