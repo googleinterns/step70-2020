@@ -10,7 +10,7 @@ import org.xml.sax.SAXException;
 
 public class Caption {
   /*
-   * Usage: String caption = new Caption(new CaptionService()).getCaptionFromID("abcdefg");
+   * Usage: String caption = new Caption().getCaptionFromID("abcdefg");
    * 
    * Return null if not found.
    */
