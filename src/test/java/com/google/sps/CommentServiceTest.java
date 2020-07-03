@@ -73,4 +73,15 @@ public final class CommentServiceTest {
     Assert.assertEquals(null, actual);
   }
 
+  /**
+   * Invalid IDs that don't refer to a video should return null. 
+   */
+  @Test
+  public void invalidVideoIdReturnsNull() throws GeneralSecurityException, IOException {
+    String videoId = "";
+    List<String> actual = commentService.getCommentsFromId(videoId);
+
+    Assert.assertEquals(null, actual);
+  }
+
 }
