@@ -21,7 +21,7 @@ function getToxicity() {
       body: comment.perspectiveString
     }
   );
-  fetch(comment.perspectiveRequest)
+  fetch(request)
     .then(response => response.json())
     .then((responseJson) => {
       const toxicity = responseJson.attributeScores.TOXICITY.summaryScore.value;
