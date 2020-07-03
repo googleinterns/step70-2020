@@ -1,0 +1,32 @@
+{
+  "name": "Capstone Project",
+  "version": "1.0",
+  "description": "Extension for step70-2020",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "declarativeContent",
+    "tabs"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "options_page": "options.html",
+  "page_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/temp-icon.png",
+      "32": "images/temp-icon.png",
+      "48": "images/temp-icon.png",
+      "128": "images/temp-icon.png"
+    }
+  },
+  "icons": {
+    "16": "images/temp-icon.png",
+     "32": "images/temp-icon.png",
+     "48": "images/temp-icon.png",
+     "128": "images/temp-icon.png"
+  },
+  "manifest_version": 2
+}
