@@ -38,7 +38,7 @@ public final class CommentServiceTest {
     List<String> expected = Arrays.asList("test comment 2", "test comment 1");
     List<String> actual = commentService.getCommentsFromId(videoId);
 
-    Assert.assertEquals(expected, actual);
+    Assert.assertTrue(actual.containsAll(expected));
   }
 
   /**

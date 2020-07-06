@@ -17,7 +17,7 @@ import java.util.Collections;
 
 public class CommentService {
 
-  private final String DEVELOPER_KEY = //"DEV_KEY";
+  private final String DEVELOPER_KEY = "DEV_KEY";
   private static final String APPLICATION_NAME = "YouTube Comments";
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
