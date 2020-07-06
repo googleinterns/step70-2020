@@ -5,19 +5,19 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.CommentThread;
 import com.google.api.services.youtube.model.CommentThreadListResponse;
+import com.google.api.services.youtube.YouTube;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.lang.Exception;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 
 public class CommentService {
 
-  private final String DEVELOPER_KEY = "DEV_KEY";
+  private final String DEVELOPER_KEY = //"DEV_KEY";
   private static final String APPLICATION_NAME = "YouTube Comments";
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 

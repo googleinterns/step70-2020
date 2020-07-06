@@ -1,9 +1,11 @@
 package com.google.sps;
 
+import com.google.sps.servlets.CommentService;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import com.google.sps.servlets.CommentService;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,9 +35,10 @@ public final class CommentServiceTest {
   @Test
   public void unlistedVideoReturnsCommentsList() throws GeneralSecurityException, IOException {
     String videoId = "9BUFUUhfXSg"; // Unlisted test video that has 2 comments. 
+    List<String> expected = Arrays.asList("test comment 2", "test comment 1");
     List<String> actual = commentService.getCommentsFromId(videoId);
 
-    Assert.assertFalse(actual.isEmpty());
+    Assert.assertEquals(expected, actual);
   }
 
   /**
