@@ -6,13 +6,13 @@ import javax.servlet.http.HttpServletResponse;
 
 public class VideoAnalysis {
 
-  private final float commentScore;
+  private final Float commentScore;
 
-  public VideoAnalysis(float commentScore) {
+  public VideoAnalysis(Float commentScore) {
     this.commentScore = commentScore;
   }
 
-  public float getCommentScore() {
+  public Float getCommentScore() {
     return commentScore;
   }
 }

@@ -1,17 +1,22 @@
 package com.google.sps;
 
-import java.io.IOException;
 import com.google.gson.JsonSyntaxException;
-import java.io.BufferedReader;
-import java.io.StringReader;
 import com.google.sps.servlets.SentimentServlet;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,48 +28,71 @@ public final class SentimentServletTest {
   @Mock
   HttpServletRequest requestMock;
 
+  @Spy
+  HttpServletResponse responseMock;
+
   /**
-   * Takes a Json String of an array and returns the elements of the array as a String, separated
-   * by periods.
-   * Ex. "["foo","bar"]" -> "foo. bar"
+   * A Json String in the form of an array should be converted to a String of period separated
+   * comments. A sentiment score should be calculated and the score should be printed in a Json
+   * object. 
+   * Ex. "foo" -> "{"commentScore":X.XX}" where X.XX is a float, for any # of decimal places. 
    */
   @Test
-  public void jsonArrayConvertsToPeriodSeparatedString() throws IOException {
+  public void jsonArrayPrintsVideoAnalysisJsonObject() throws IOException {
     String json = "[\"a\",\"b\",\"c\"]"; // "["a","b","c"]"
     when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
     
-    String actual = sentimentServlet.requestToString(requestMock);
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter);
+    when(responseMock.getWriter()).thenReturn(writer);
 
-    Assert.assertEquals("a. b. c", actual);
+    new SentimentServlet().doGet(requestMock, responseMock);
+
+    String pattern = "\\{\"commentScore\":[-+]?[0-9]*\\.?[0-9]+\\}\n";
+
+    Assert.assertTrue(stringWriter.toString().matches(pattern));
   }
 
   /**
-   * If the Json String is an empty array, an empty String should be returned. 
-   * Ex. "[]" -> ""
+   * If the Json String is not in the form of an array, a JsonSyntaxException is caught and null is
+   * returned. Gson excludes null values, therefore resulting in an empty Json object.
+   * Ex. "foo" -> "{}"
    */
   @Test
-  public void emptyJsonArrayConvertsToEmptyString() throws IOException {
+  public void notArrayPrintsEmptyJsonObject() throws IOException {
+    String json = "foo";
+    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
+    
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter);
+    when(responseMock.getWriter()).thenReturn(writer);
+
+    new SentimentServlet().doGet(requestMock, responseMock);
+
+    String pattern = "\\{\\}\n"; //"{}"
+
+    Assert.assertTrue(stringWriter.toString().matches(pattern));
+  }
+
+  /**
+   * If the Json String is an empty array, a JsonSyntaxException is caught and null is returned.
+   * Gson excludes null values, therefore resulting in an empty Json object.
+   * Ex. "[]" -> "{}"
+   */
+  @Test
+  public void emptyArrayPrintsEmptyJsonObject() throws IOException {
     String json = "[]";
     when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
     
-    String actual = sentimentServlet.requestToString(requestMock);
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter);
+    when(responseMock.getWriter()).thenReturn(writer);
 
-    Assert.assertEquals("", actual);
-  }
+    new SentimentServlet().doGet(requestMock, responseMock);
 
-  /**
-   * If the Json String is not in the form of an array, a JsonSyntaxException is caught and an
-   * empty String is returned. 
-   * Ex. "foo" -> ""
-   */
-  @Test
-  public void notArrayConvertsToEmptyString() throws IOException {
-    String json = "foo";
-    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
+    String pattern = "\\{\\}\n"; //"{}"
 
-    String actual = sentimentServlet.requestToString(requestMock);
-
-    Assert.assertEquals("", actual);
+    Assert.assertTrue(stringWriter.toString().matches(pattern));
   }
 
 }
