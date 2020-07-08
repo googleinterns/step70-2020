@@ -7,7 +7,7 @@
  const NO_COMMENT_ERROR =  new Error('No comment inputted');
  const COMMENT_LENGTH_EXCEEDED_ERROR = new Error('Comment is too long. We are currently only able to analyze comments of up to approx. 3000 characters.');
 
- function toxicityToPercent(toxicity) {
+ function toxicityToPercentString(toxicity) {
    return (toxicity*100).toFixed(2).toString() + '%';
  }
 
@@ -30,7 +30,7 @@ function getToxicity() {
     .then(response => response.json())
     .then((responseJson) => {
       const toxicity = responseJson.attributeScores.TOXICITY.summaryScore.value;
-      updateDom(toxicityToPercent(toxicity), 'toxicity-container');
+      updateDom(toxicityToPercentString(toxicity), 'toxicity-container');
     })
     .catch((err) => {
       updateDom('The analysis feature is unavailable at this moment.', 'toxicity-container');
