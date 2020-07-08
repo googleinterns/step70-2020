@@ -4,14 +4,19 @@
  *  If not valid, updates DOM with an error message
  */
 
+ const NO_COMMENT_ERROR =  new Error('No comment inputted');
+ const COMMENT_LENGTH_EXCEEDED_ERROR = new Error('Comment is too long. We are currently only able to analyze comments of up to approx. 3000 characters.');
+
  function toxicityToPercent(toxicity) {
-   return (toxicity*100).toFixed(2);
+   return (toxicity*100).toFixed(2).toString() + '%';
  }
 
 function getToxicity() {
-  const comment = new Comment(document.getElementById("comment-text").value);
-  if(!comment.isValid) {
-    updateDom(comment.getError(), 'toxicity-container');
+  let comment;
+  try {
+    comment = new Comment(document.getElementById('comment-text').value);
+  } catch(err) {
+    updateDom(err.message, 'toxicity-container');
     return;
   }
   const request = new Request(
@@ -21,7 +26,7 @@ function getToxicity() {
       body: comment.perspectiveString
     }
   );
-  fetch(comment.perspectiveRequest)
+  fetch(request)
     .then(response => response.json())
     .then((responseJson) => {
       const toxicity = responseJson.attributeScores.TOXICITY.summaryScore.value;

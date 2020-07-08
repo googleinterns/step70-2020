@@ -5,21 +5,15 @@
 
 class Comment{
   #MAX_COMMENTS  = 3000;
-  #NO_COMMENT_ERROR = 'No comment inputted';
-  #COMMENT_LENGTH_EXCEEDED_ERROR = 'Comment is too long. We are currently only able to analyze comments of up to approx. 3000 characters.';
   constructor(text) {
     this.text = text;
-    this.isValid = !this.getError();
-    this.perspectiveString = this.makePerspectiveRequestString();
-  }
-  getError() {
-    if(this.text == 0) {
-      return this.#NO_COMMENT_ERROR;
+    if(!this.text) {
+      throw NO_COMMENT_ERROR;
     }
     if(this.text.length > this.#MAX_COMMENTS) {
-      return this.#COMMENT_LENGTH_EXCEEDED_ERROR;
+      throw COMMENT_LENGTH_EXCEEDED_ERROR;
     }
-    return 0;
+    this.perspectiveString = this.makePerspectiveRequestString();
   }
   makePerspectiveRequestString() {
     const bodyObject = {
