@@ -16,7 +16,7 @@ function getPopular() {
     return response.result;
   })
   .catch((err) => {
-    alert('Oops! We were not able to get the videos from Youtube');
+    updateDom('Oops! We were not able to get the videos from Youtube', 'popular-list-container');
     console.log('An error occurred when making API list request:', err);
   })
 }

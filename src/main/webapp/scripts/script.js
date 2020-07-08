@@ -11,8 +11,13 @@ function loadApi(callback) {
       callback();
     })
     .catch((err) => {
-      alert('Oops! An error occured with Youtube, please try again later.');
+      updateDom('Oops! An error occured with Youtube, please try again later.', 'popular-list-container');
       console.log('Was not able to load Google API client:', err);
     });
   });
+}
+
+function updateDom(text, containerId) {
+  const containerDOM = document.getElementById(containerId);
+  containerDOM.innerText = text;
 }
