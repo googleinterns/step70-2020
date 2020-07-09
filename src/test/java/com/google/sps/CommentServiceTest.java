@@ -50,7 +50,7 @@ public final class CommentServiceTest {
     String videoId = "qYnSnsysgVk";
     List<String> actual = commentService.getCommentsFromId(videoId);
 
-    Assert.assertEquals(null, actual);
+    Assert.assertEquals(Arrays.asList(), actual);
   }
   
   /**
@@ -62,7 +62,7 @@ public final class CommentServiceTest {
     String videoId = "NEXFoP0JurI";
     List<String> actual = commentService.getCommentsFromId(videoId);
 
-    Assert.assertEquals(null, actual);
+    Assert.assertEquals(Arrays.asList(), actual);
   }
 
   /**
@@ -73,7 +73,7 @@ public final class CommentServiceTest {
     String videoId = "ERL0EDZT1kE";
     List<String> actual = commentService.getCommentsFromId(videoId);
 
-    Assert.assertEquals(null, actual);
+    Assert.assertEquals(Arrays.asList(), actual);
   }
 
   /**
@@ -84,7 +84,7 @@ public final class CommentServiceTest {
     String videoId = "";
     List<String> actual = commentService.getCommentsFromId(videoId);
 
-    Assert.assertEquals(null, actual);
+    Assert.assertEquals(Arrays.asList(), actual);
   }
 
 }
