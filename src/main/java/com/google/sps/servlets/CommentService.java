@@ -17,6 +17,40 @@ import java.util.List;
 
 public class CommentService {
 
+  public class Comment {
+    private final String text;
+    private final int score;
+    
+    public Comment(String text) {
+      this.text = text;
+      this.score = score;
+    }
+
+    public int score() { return this.score; }
+  };
+
+  public interface CommentCollection {
+    public int getScore();
+  };
+
+  private class EmptyCommentCollection implements CommentCollection {
+    public int getScore() { return 0; }
+  };
+
+  private class NonEmptyCommentCollection implements CommentCollection {
+    private List<Comment> comments;
+    
+    public NonEmptyCommentCollection(List<Comment> comments) {
+      this.comments = comments;
+    }
+
+    public int getScore() {
+      return comments.stream().map(Comment::score).sum() / comments.size();
+    }
+  };
+
+  
+  
   private final String DEVELOPER_KEY = "DEV_KEY";
   private static final String APPLICATION_NAME = "YouTube Comments";
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -40,7 +74,7 @@ public class CommentService {
    * Calls YouTube Data API to return a list of the top 25 comments for a video, identified by its
    * video id. If the video has no comments or comments can't be retrieved, return an empty list.
    */
-  public List<String> getCommentsFromId(String videoId)
+  public CommentCollection getCommentsFromId(String videoId)
       throws GeneralSecurityException, IOException, GoogleJsonResponseException {
     request = youtubeService.commentThreads().list(Collections.singletonList("snippet"));
     
@@ -56,18 +90,18 @@ public class CommentService {
       System.err.println(e.getDetails().getMessage());
       // If comments cannot be retrieved, return an empty list. Comments won't be accounted for in
       // the average sentiment score calculation.
-      return Arrays.asList();
+      return new EmptyCommentCollection();
     }
 
-    List<String> commentsList = new ArrayList<>();
+    List<Comment> commentsList = new ArrayList<>();
     for (CommentThread commentThread : response.getItems()){
       String commentContent = commentThread.getSnippet()
           .getTopLevelComment()
           .getSnippet()
           .getTextDisplay();
-      commentsList.add(commentContent);
+      commentsList.add(new Comment(commentContent, /* score = */ 10));
     }
 
-    return commentsList;
+    return new NonEmptyCommentCollection(commentsList);
   }
 }
