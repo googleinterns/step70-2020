@@ -1,5 +1,9 @@
 package com.google.sps;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.CommentThread;
+import com.google.api.services.youtube.model.CommentThreadListResponse;
 import com.google.sps.servlets.CommentService;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -7,82 +11,97 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.mockito.Answers;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(JUnit4.class)
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
 
 public final class CommentServiceTest {
 
-  CommentService commentService = new CommentService();
+  String VIDEO_ID = ""; // Arbitrary video ID, never used.
 
-  /**
-   * A list of Strings should be returned for any public video that has comments. 
-   */
-  @Test
-  public void publicVideoReturnsCommentsList() throws GeneralSecurityException, IOException {
-    String videoId = "v3whnmU619I"; // Public video that has some comments.
-    List<String> actual = commentService.getCommentsFromId(videoId);
+  @Mock CommentThreadListResponse responseMock;
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS) YouTube youtubeServiceMock;
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS) YouTube.CommentThreads.List requestMock;
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS) CommentThread commentThreadMock;
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS) GoogleJsonResponseException exceptionMock;
 
-    Assert.assertFalse(actual.isEmpty());
+  @InjectMocks CommentService commentService;
+
+  @Before
+  public void setUp() throws IOException {
+    when(youtubeServiceMock.commentThreads().list(any())).thenReturn(requestMock);
   }
 
   /**
-   * Unlisted videos should be accessible to the API if the video id is inputted. List of comments
-   * should be returned for unlisted videos just like they would for a public video. 
+   * A list of Strings should be returned for any public/unlisted video that has comments. 
    */
   @Test
-  public void unlistedVideoReturnsCommentsList() throws GeneralSecurityException, IOException {
-    String videoId = "9BUFUUhfXSg"; // Unlisted test video that has 2 comments. 
-    List<String> expected = Arrays.asList("test comment 2", "test comment 1");
-    List<String> actual = commentService.getCommentsFromId(videoId);
+  public void videoReturnsCommentsList() throws GeneralSecurityException, IOException {
+    List<CommentThread> threadList =
+        new ArrayList<>(Arrays.asList(commentThreadMock, commentThreadMock));
+    
+    when(requestMock.setKey(anyString())
+        .setMaxResults(anyLong())
+        .setOrder("relevance")
+        .setTextFormat("plainText")
+        .setVideoId(anyString())
+        .execute())
+        .thenReturn(responseMock);
+    when(responseMock.getItems()).thenReturn(threadList);
+    when(commentThreadMock.getSnippet().getTopLevelComment().getSnippet().getTextDisplay())
+        .thenReturn("a", "b"); // Returns "a" first time, "b" second time.
+    
+    List<String> expected = new ArrayList<>(Arrays.asList("a", "b"));
+    
+    List<String> actual = commentService.getCommentsFromId(VIDEO_ID);
 
-    Assert.assertTrue(actual.containsAll(expected));
+    Assert.assertEquals(expected, actual);
   }
 
   /**
-   * Private videos should not be accessible with the YouTube API. In this case, a 
-   * GoogleJsonResponseException should be caught and null should be returned. 
+   * If a video's comments can't be accessed (ex. the video has disabled commenting), a
+   * GoogleJsonResponseException should be caught and an empty list should be returned. 
    */
   @Test
-  public void privateVideoReturnsNull() throws GeneralSecurityException, IOException {
-    String videoId = "qYnSnsysgVk";
-    List<String> actual = commentService.getCommentsFromId(videoId);
+  public void inaccessibleCommentsReturnsEmptyList() throws GeneralSecurityException, IOException {
+    when(requestMock.setKey(anyString())
+        .setMaxResults(anyLong())
+        .setOrder("relevance")
+        .setTextFormat("plainText")
+        .setVideoId(anyString())
+        .execute())
+        .thenThrow(exceptionMock);
+    when(exceptionMock.getDetails().getMessage()).thenReturn("Can't get comments");
+    List<String> actual = commentService.getCommentsFromId(VIDEO_ID);
 
     Assert.assertEquals(Arrays.asList(), actual);
   }
-  
-  /**
-   * For videos that have disabled commenting, a GoogleJsonResponseException should be caught and
-   * null should be returned. 
-   */
-  @Test
-  public void disabledCommentsReturnsNull() throws GeneralSecurityException, IOException {
-    String videoId = "NEXFoP0JurI";
-    List<String> actual = commentService.getCommentsFromId(videoId);
-
-    Assert.assertEquals(Arrays.asList(), actual);
-  }
 
   /**
-   * Videos with no comments should return null to avoid lowering the average sentiment score. 
+   * Videos with zero comments should return an empty list.
    */
   @Test
-  public void noCommentsReturnsNull() throws GeneralSecurityException, IOException {
-    String videoId = "ERL0EDZT1kE";
-    List<String> actual = commentService.getCommentsFromId(videoId);
-
-    Assert.assertEquals(Arrays.asList(), actual);
-  }
-
-  /**
-   * Invalid IDs that don't refer to a video should return null. 
-   */
-  @Test
-  public void invalidVideoIdReturnsNull() throws GeneralSecurityException, IOException {
-    String videoId = "";
-    List<String> actual = commentService.getCommentsFromId(videoId);
+  public void noCommentsReturnsEmptyList() throws GeneralSecurityException, IOException {
+    when(requestMock.setKey(anyString())
+        .setMaxResults(anyLong())
+        .setOrder("relevance")
+        .setTextFormat("plainText")
+        .setVideoId(anyString())
+        .execute())
+        .thenReturn(responseMock);
+    when(responseMock.getItems()).thenReturn(new ArrayList<>());
+    
+    List<String> actual = commentService.getCommentsFromId(VIDEO_ID);
 
     Assert.assertEquals(Arrays.asList(), actual);
   }

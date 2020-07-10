@@ -5,15 +5,15 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.CommentThread;
 import com.google.api.services.youtube.model.CommentThreadListResponse;
-import com.google.api.services.youtube.YouTube;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
 public class CommentService {
 
@@ -21,6 +21,13 @@ public class CommentService {
   private static final String APPLICATION_NAME = "YouTube Comments";
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
   private final long MAX_RESULTS = 25L;
+  private YouTube youtubeService;
+  private YouTube.CommentThreads.List request;
+  private CommentThreadListResponse response;
+
+  public CommentService() throws GeneralSecurityException, IOException {
+    youtubeService = getService();
+  }
 
   private YouTube getService() throws GeneralSecurityException, IOException {
     final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
@@ -35,11 +42,8 @@ public class CommentService {
    */
   public List<String> getCommentsFromId(String videoId)
       throws GeneralSecurityException, IOException, GoogleJsonResponseException {
-    YouTube youtubeService = getService();
-    YouTube.CommentThreads.List request = youtubeService.commentThreads()
-        .list(Collections.singletonList("snippet"));
+    request = youtubeService.commentThreads().list(Collections.singletonList("snippet"));
     
-    CommentThreadListResponse response;
     try { 
       // Call YouTube API and get the 25 comments that appear first in comment section of the video
       response = request.setKey(DEVELOPER_KEY)
@@ -51,7 +55,7 @@ public class CommentService {
     } catch (GoogleJsonResponseException e) {
       System.err.println(e.getDetails().getMessage());
       // If comments cannot be retrieved, return an empty list. Comments won't be accounted for in
-      // the sentiment score calculation.
+      // the average sentiment score calculation.
       return Arrays.asList();
     }
 
