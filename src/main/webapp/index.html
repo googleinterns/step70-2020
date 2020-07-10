@@ -7,9 +7,32 @@
 </head>
 <body>
   <div id="content">
-    <h1>Hello World!</h1>
-  </div>
+  
+    <form>
+      <label for="video-url">Video URL:</label>
+      <textarea name="video-url" id="video-url"></textarea>
+      <br/><br/>
 
+      <input type="button" value="Analyze" onclick="getCaptions()"/>
+    </form>
+
+    <p id="sentiment-container"></p>
+  
+    <form>
+      <label for="comment">Comment:</label>
+      <textarea name="comment" id="comment-text"></textarea>
+      <br/><br/>
+
+      <input type="button" value="Is this Toxic?" onclick="getToxicity()"/>
+    </form>
+
+    <p id="toxicity-container"></p>
+
+  </div>
+  
   <script src="scripts/script.js"></script>
+  <script src="scripts/captions.js"></script>
+  <script src="scripts/perspective.js"></script>
+  </script>
 </body>
 </html>
