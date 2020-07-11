@@ -1,7 +1,6 @@
 /*
- *  Makes a new comment object form the text box
- *  If it is valid, sends a Request object to Perspective API and updates DOM
- *  If not valid, updates DOM with an error message
+ *  Calls the Perspective API
+ *  callback function is called after API call completed
  */
 
 function perspectiveApiCall(comment, callback) {

@@ -1,6 +1,6 @@
 /*
- *  Class handles actions related to creating and analyzing new comments
- *  TODO: add methods to add new comment to youtube video using Youtube API
+ *  Class constructs Comment object from text string
+ *  responds with comment object that is ready for Perspective API use or error
  */
 
 class Comment{

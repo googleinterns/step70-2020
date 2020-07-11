@@ -8,7 +8,7 @@ PERSPECTIVE_API_ERROR =  new Error('The analysis feature is unavailable at this 
 function getToxicity() {
   let comment;
   try {
-    comment = new Comment(document.getElementById('comment-text').value);
+    comment = new Comment(getDomValue('comment-text'));
   } catch(error) {
     updateDom(error.message, 'toxicity-container');
   }
