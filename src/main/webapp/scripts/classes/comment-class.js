@@ -4,7 +4,7 @@
  */
 
 class Comment{
-  #MAX_COMMENTS  = 3000;
+  #MAX_COMMENTS = 3000;
 
   constructor(text) {
     this.text = text;
