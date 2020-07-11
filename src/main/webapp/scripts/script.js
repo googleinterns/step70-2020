@@ -1,4 +1,4 @@
-const API_KEY = 'AIzaSyAr7MKPZKUCQ9G-N00I44EJqvsYjE3jAq';
+const API_KEY = '';
 
 function updateDom(text, containerId) {
   const containerDOM = document.getElementById(containerId);
