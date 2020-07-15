@@ -1,5 +1,6 @@
 package com.google.sps.servlets;
 
+import com.google.api.gax.rpc.ApiException;
 import com.google.cloud.language.v1.Document;
 import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.Sentiment;
@@ -18,17 +19,43 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/sentiment")
 public class SentimentServlet extends HttpServlet {
 
-  private VideoAnalysis videoAnalysis;
+  private LanguageServiceClient languageService;
+  private Sentiment sentiment;
+
+  public SentimentServlet() throws IOException {
+    languageService = LanguageServiceClient.create();
+  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String comments = requestToString(request);
-    Float commentsScore = calculateSentimentScore(comments);
-    videoAnalysis = new VideoAnalysis(commentsScore);
-    String json = new Gson().toJson(videoAnalysis);
+    Float commentsScore = null;
+    boolean isValid = true;
 
-    response.setContentType("application/json;");
-    response.getWriter().println(json);
+    try {
+      String comments = requestToString(request);
+      if (comments.equals("")) {
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+            "No comments to analyze. Request must be a non-empty array");
+        isValid = false;
+      }
+      commentsScore = calculateSentimentScore(comments);
+    } catch (JsonSyntaxException e) {
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+      isValid = false;
+    } catch (ApiException e) {
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+          "Language service client failed.");
+      isValid = false;
+    }
+
+    if (isValid) {
+      VideoAnalysis videoAnalysis = new VideoAnalysis(commentsScore);
+      String json = new Gson().toJson(videoAnalysis);
+
+      response.setContentType("application/json;");
+      response.getWriter().println(json);
+    }
+    
   }
 
   /**
@@ -40,18 +67,8 @@ public class SentimentServlet extends HttpServlet {
     Gson gson = new Gson();
     
     String textStr = request.getReader().lines().collect(Collectors.joining());
-
-    if (textStr.equals("[]")) {
-      return null;
-    }
-
-    try {
-      List<String> textList = Arrays.asList(gson.fromJson(textStr, String[].class));
-      return String.join(". ", textList);
-    } catch (JsonSyntaxException e) {
-      System.out.println(e.getMessage());
-      return null;
-    }
+    List<String> textList = Arrays.asList(gson.fromJson(textStr, String[].class));
+    return String.join(". ", textList);
   }
 
   /**
@@ -62,11 +79,12 @@ public class SentimentServlet extends HttpServlet {
       return null;
     }
 
-    Document doc =
-        Document.newBuilder().setContent(text).setType(Document.Type.PLAIN_TEXT).build();
-    LanguageServiceClient languageService = LanguageServiceClient.create();
-    Sentiment sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
-    float score = sentiment.getScore();
+    Document doc = Document.newBuilder()
+        .setContent(text)
+        .setTypeValue(Document.Type.PLAIN_TEXT_VALUE)
+        .build();
+    sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
+    Float score = new Float(sentiment.getScore());
     languageService.close();
 
     return score;

@@ -46,7 +46,8 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-language</artifactId>
-      <version>1.55.0</version>
+      <!-- <version>1.55.0</version> -->
+      <version>1.100.0</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -59,6 +60,16 @@
       <artifactId>mockito-core</artifactId>
       <version>3.0.0</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>26.0-android</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava-jdk5</artifactId>
+      <version>17.0</version>
     </dependency>
   </dependencies>
 
