@@ -1,4 +1,4 @@
-const API_KEY = '';
+const API_KEY = 'AIzaSyAr7MKPZKUCQ9G-N00I44EJqvsYjE3jAqU';
 const YOUTUBE_DISCOVERY = 'https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest';
 
 function loadApi(callback) {
@@ -10,9 +10,9 @@ function loadApi(callback) {
     .then(function() {
       callback();
     })
-    .catch((err) => {
+    .catch((error) => {
       updateDom('Oops! An error occured with Youtube, please try again later.', 'popular-list-container');
-      console.log('Was not able to load Google API client:', err);
+      console.log('Was not able to load Google API client:', error);
     });
   });
 }
