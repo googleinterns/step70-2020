@@ -2,6 +2,7 @@ package com.google.sps.servlets;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -54,13 +55,18 @@ public class CommentService {
           .execute();
     } catch (GoogleJsonResponseException e) {
       System.err.println(e.getDetails().getMessage());
-      // If comments cannot be retrieved, return an empty list. Comments won't be accounted for in
-      // the average sentiment score calculation.
-      return Arrays.asList();
+      
+      for (GoogleJsonError.ErrorInfo err : e.getDetails().getErrors()) {
+        if (!err.getReason().equals("commentsDisabled")) { // Ex. invalid video id or private video
+          throw new IllegalArgumentException();
+        } else { // Video with disabled comments
+          return new ArrayList<>();
+        }
+      }
     }
 
     List<String> commentsList = new ArrayList<>();
-    for (CommentThread commentThread : response.getItems()){
+    for (CommentThread commentThread : response.getItems()) {
       String commentContent = commentThread.getSnippet()
           .getTopLevelComment()
           .getSnippet()
