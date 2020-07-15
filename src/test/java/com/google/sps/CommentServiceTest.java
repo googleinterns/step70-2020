@@ -1,8 +1,13 @@
 package com.google.sps;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.googleapis.json.GoogleJsonError;
+import com.google.api.client.googleapis.json.GoogleJsonError.ErrorInfo;
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.Comment;
+import com.google.api.services.youtube.model.CommentSnippet;
 import com.google.api.services.youtube.model.CommentThread;
+import com.google.api.services.youtube.model.CommentThreadSnippet;
 import com.google.api.services.youtube.model.CommentThreadListResponse;
 import com.google.sps.servlets.CommentService;
 import java.io.IOException;
@@ -32,7 +37,6 @@ public final class CommentServiceTest {
   @Mock CommentThreadListResponse responseMock;
   @Mock(answer = Answers.RETURNS_DEEP_STUBS) YouTube youtubeServiceMock;
   @Mock(answer = Answers.RETURNS_DEEP_STUBS) YouTube.CommentThreads.List requestMock;
-  @Mock(answer = Answers.RETURNS_DEEP_STUBS) CommentThread commentThreadMock;
   @Mock(answer = Answers.RETURNS_DEEP_STUBS) GoogleJsonResponseException exceptionMock;
 
   @InjectMocks CommentService commentService;
@@ -47,19 +51,16 @@ public final class CommentServiceTest {
    */
   @Test
   public void videoReturnsCommentsList() throws GeneralSecurityException, IOException {
-    List<CommentThread> threadList =
-        new ArrayList<>(Arrays.asList(commentThreadMock, commentThreadMock));
-    
+    CommentThreadListResponse response = new CommentThreadListResponse();
+    response.setItems(createCommentThreadList(new ArrayList<>(Arrays.asList("a", "b"))));
+
     when(requestMock.setKey(anyString())
         .setMaxResults(anyLong())
         .setOrder("relevance")
         .setTextFormat("plainText")
         .setVideoId(anyString())
         .execute())
-        .thenReturn(responseMock);
-    when(responseMock.getItems()).thenReturn(threadList);
-    when(commentThreadMock.getSnippet().getTopLevelComment().getSnippet().getTextDisplay())
-        .thenReturn("a", "b"); // Returns "a" first time, "b" second time.
+        .thenReturn(response);
     
     List<String> expected = new ArrayList<>(Arrays.asList("a", "b"));
     
@@ -69,11 +70,15 @@ public final class CommentServiceTest {
   }
 
   /**
-   * If a video's comments can't be accessed (ex. the video has disabled commenting), a
-   * GoogleJsonResponseException should be caught and an empty list should be returned. 
+   * If a video can't be accessed (ex. the video's ID doesn't refer to a video), an
+   * IllegalArgumentException should be thrown as this is a user error.  
    */
-  @Test
-  public void inaccessibleCommentsReturnsEmptyList() throws GeneralSecurityException, IOException {
+  @Test(expected = IllegalArgumentException.class)
+  public void inaccessibleVideoThrowsException() throws GeneralSecurityException, IOException {
+    GoogleJsonError error =
+        createExceptionDetails(new ArrayList<>(Arrays.asList("videoNotFound")),
+            "Private video or invalid id");
+    
     when(requestMock.setKey(anyString())
         .setMaxResults(anyLong())
         .setOrder("relevance")
@@ -81,7 +86,30 @@ public final class CommentServiceTest {
         .setVideoId(anyString())
         .execute())
         .thenThrow(exceptionMock);
-    when(exceptionMock.getDetails().getMessage()).thenReturn("Can't get comments");
+    when(exceptionMock.getDetails()).thenReturn(error);
+
+    commentService.getCommentsFromId(VIDEO_ID);
+  }
+
+  /**
+   * If a video's comments are disabled, a GoogleJsonResponseException is thrown and an empty list
+   * will be returned. 
+   */
+  @Test
+  public void disabledCommentsReturnsEmptyList() throws GeneralSecurityException, IOException {
+    GoogleJsonError error =
+        createExceptionDetails(new ArrayList<>(Arrays.asList("commentsDisabled")),
+            "Video with disabled comments");
+    
+    when(requestMock.setKey(anyString())
+        .setMaxResults(anyLong())
+        .setOrder("relevance")
+        .setTextFormat("plainText")
+        .setVideoId(anyString())
+        .execute())
+        .thenThrow(exceptionMock);
+    when(exceptionMock.getDetails()).thenReturn(error);
+
     List<String> actual = commentService.getCommentsFromId(VIDEO_ID);
 
     Assert.assertEquals(Arrays.asList(), actual);
@@ -92,18 +120,60 @@ public final class CommentServiceTest {
    */
   @Test
   public void noCommentsReturnsEmptyList() throws GeneralSecurityException, IOException {
+    CommentThreadListResponse response = new CommentThreadListResponse();
+    response.setItems(createCommentThreadList(new ArrayList<>(Arrays.asList())));
+
     when(requestMock.setKey(anyString())
         .setMaxResults(anyLong())
         .setOrder("relevance")
         .setTextFormat("plainText")
         .setVideoId(anyString())
         .execute())
-        .thenReturn(responseMock);
-    when(responseMock.getItems()).thenReturn(new ArrayList<>());
+        .thenReturn(response);
     
     List<String> actual = commentService.getCommentsFromId(VIDEO_ID);
 
     Assert.assertEquals(Arrays.asList(), actual);
+  }
+
+  /**
+   * Creates a list of CommentThread objects that stores comment texts specified by the parameter.
+   * The returned list is set as the items of a CommenThreadListResponse. 
+   */
+  private List<CommentThread> createCommentThreadList(List<String> strList) {
+    List<CommentThread> threadList = new ArrayList<>();
+
+    for (String str : strList) {
+      CommentThread thread = new CommentThread();
+      thread.setSnippet(new CommentThreadSnippet()
+          .setTopLevelComment(new Comment()
+          .setSnippet(new CommentSnippet()
+          .setTextDisplay(str))));
+      threadList.add(thread);
+    }
+
+    return threadList;
+  }
+
+  /**
+   * Creates and returns a GoogleJsonError that stores information about a
+   * GoogleJsonResponseException (list of errors, reasons for each error, exception message) that's
+   * needed for the tests. 
+   */
+  private GoogleJsonError createExceptionDetails(List<String> strList, String message) {
+    List<GoogleJsonError.ErrorInfo> errorList = new ArrayList<>();
+
+    for (String str : strList) {
+      GoogleJsonError.ErrorInfo error = new ErrorInfo();
+      error.setReason(str);
+      errorList.add(error);
+    }
+
+    GoogleJsonError details = new GoogleJsonError();
+    details.setErrors(errorList);
+    details.setMessage(message);
+
+    return details;
   }
 
 }
