@@ -58,7 +58,7 @@ public final class CommentServiceTest {
         .setMaxResults(anyLong())
         .setOrder("relevance")
         .setTextFormat("plainText")
-        .setVideoId(anyString())
+        .setVideoId(VIDEO_ID)
         .execute())
         .thenReturn(response);
     
@@ -83,7 +83,7 @@ public final class CommentServiceTest {
         .setMaxResults(anyLong())
         .setOrder("relevance")
         .setTextFormat("plainText")
-        .setVideoId(anyString())
+        .setVideoId(VIDEO_ID)
         .execute())
         .thenThrow(exceptionMock);
     when(exceptionMock.getDetails()).thenReturn(error);
@@ -92,7 +92,7 @@ public final class CommentServiceTest {
   }
 
   /**
-   * If a video's comments are disabled, a GoogleJsonResponseException is thrown and an empty list
+   * If a video's comments are disabled, a GoogleJsonResponseException is caught and an empty list
    * will be returned. 
    */
   @Test
@@ -105,7 +105,7 @@ public final class CommentServiceTest {
         .setMaxResults(anyLong())
         .setOrder("relevance")
         .setTextFormat("plainText")
-        .setVideoId(anyString())
+        .setVideoId(VIDEO_ID)
         .execute())
         .thenThrow(exceptionMock);
     when(exceptionMock.getDetails()).thenReturn(error);
@@ -113,6 +113,28 @@ public final class CommentServiceTest {
     List<String> actual = commentService.getCommentsFromId(VIDEO_ID);
 
     Assert.assertEquals(Arrays.asList(), actual);
+  }
+
+  /**
+   * If a video's comments can't be accessed for any other reason (ex, processing failure), a
+   * GoogleJsonResponseException should be thrown.  
+   */
+  @Test(expected = GoogleJsonResponseException.class)
+  public void otherProcessingErrorThrowsException() throws GeneralSecurityException, IOException {
+    GoogleJsonError error =
+        createExceptionDetails(new ArrayList<>(Arrays.asList("testError")),
+            "Other error detail (not commentsDisabled or videoNotFound)");
+    
+    when(requestMock.setKey(anyString())
+        .setMaxResults(anyLong())
+        .setOrder("relevance")
+        .setTextFormat("plainText")
+        .setVideoId(VIDEO_ID)
+        .execute())
+        .thenThrow(exceptionMock);
+    when(exceptionMock.getDetails()).thenReturn(error);
+
+    commentService.getCommentsFromId(VIDEO_ID);
   }
 
   /**
@@ -127,7 +149,7 @@ public final class CommentServiceTest {
         .setMaxResults(anyLong())
         .setOrder("relevance")
         .setTextFormat("plainText")
-        .setVideoId(anyString())
+        .setVideoId(VIDEO_ID)
         .execute())
         .thenReturn(response);
     
@@ -138,7 +160,7 @@ public final class CommentServiceTest {
 
   /**
    * Creates a list of CommentThread objects that stores comment texts specified by the parameter.
-   * The returned list is set as the items of a CommenThreadListResponse. 
+   * The returned list is set as the items of a CommentThreadListResponse. 
    */
   private List<CommentThread> createCommentThreadList(List<String> strList) {
     List<CommentThread> threadList = new ArrayList<>();
