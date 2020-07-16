@@ -26,10 +26,23 @@ public class CommentService {
   private YouTube.CommentThreads.List request;
   private CommentThreadListResponse response;
 
+  /**
+   * Initializes youtubeService. 
+   * 
+   * @throws GeneralSecurityException
+   * @throws IOException 
+   */
   public CommentService() throws GeneralSecurityException, IOException {
     youtubeService = getService();
   }
 
+  /**
+   * Builds the YouTube service to make calls to the API. 
+   * 
+   * @return a list of the top 25 comments for the video
+   * @throws GeneralSecurityException
+   * @throws IOException 
+   */
   private YouTube getService() throws GeneralSecurityException, IOException {
     final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
     return new YouTube.Builder(httpTransport, JSON_FACTORY, null)
@@ -38,11 +51,17 @@ public class CommentService {
   }
 
   /**
-   * Calls YouTube Data API to return a list of the top 25 comments for a video, identified by its
-   * video id. If the video has no comments or comments can't be retrieved, return an empty list.
+   * Calls YouTube Data API to get a list of comments for a video, identified by its video id. If
+   * the video has no comments or comments are disabled, return an empty list.
+   * 
+   * @param videoId ID of YouTube video
+   * @return a list of the top 25 comments for the video
+   * @throws IOException 
+   * @throws IllegalArgumentException 
+   * @throws GoogleJsonResponseException
    */
   public List<String> getCommentsFromId(String videoId)
-      throws GeneralSecurityException, IOException, GoogleJsonResponseException {
+      throws IOException, IllegalArgumentException, GoogleJsonResponseException {
     request = youtubeService.commentThreads().list(Collections.singletonList("snippet"));
     
     try { 
@@ -57,11 +76,12 @@ public class CommentService {
       System.err.println(e.getDetails().getMessage());
       
       for (GoogleJsonError.ErrorInfo err : e.getDetails().getErrors()) {
-        if (!err.getReason().equals("commentsDisabled")) { // Ex. invalid video id or private video
-          throw new IllegalArgumentException();
-        } else { // Video with disabled comments
+        if (err.getReason().equals("videoNotFound")) { // Invalid video id or private video
+          throw new IllegalArgumentException("Video is private or does not exist.");
+        } else if (err.getReason().equals("commentsDisabled")) { // Video with disabled comments
           return new ArrayList<>();
         }
+        throw e;
       }
     }
 
