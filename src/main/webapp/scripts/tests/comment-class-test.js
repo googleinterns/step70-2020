@@ -25,10 +25,3 @@ QUnit.test('Comment Class - Constructor (input size exceeded)', function(assert)
     'error message for comment length exceeded'
   );
 });
-
-QUnit.test('Comment Class - makePerspectiveRequestString (normal use)', function(assert) {
-  const comment = new Comment('normal comment');
-  const result = comment.makePerspectiveRequestString();
-  const expected = '{"comment":{"text":"normal comment"},"requestedAttributes":{"TOXICITY":{}},"languages":["en"]}';
-  assert.equal(result, expected, 'JSON string of comment object');
-});
