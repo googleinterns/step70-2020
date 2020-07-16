@@ -26,10 +26,11 @@ QUnit.test('getToxicity (comment length exceeded)', function(assert) {
 QUnit.test('getToxicityFromPerspectiveApi', function(assert) {
   const done = assert.async();
   const comment = 'normal comment';
+  const TOXICITY = 0;
   sinon.stub(window, 'fetch');
   window.fetch.returns(Promise.resolve(mockPerspectiveResponse));
   getToxicityFromPerspectiveApi().then((response) => {
-    assert.equal(response, 0, 'score is 0');
+    assert.equal(response, TOXICITY, 'score is 0');
     window.fetch.restore();
     done();
   });
