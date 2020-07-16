@@ -81,8 +81,8 @@ public class CommentService {
         } else if (err.getReason().equals("commentsDisabled")) { // Video with disabled comments
           return new ArrayList<>();
         }
-        throw e;
       }
+      throw e;
     }
 
     List<String> commentsList = new ArrayList<>();
