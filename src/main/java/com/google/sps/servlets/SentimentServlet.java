@@ -28,34 +28,43 @@ public class SentimentServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String comments = "";
     Float commentsScore = null;
-    boolean isValid = true;
 
     try {
-      String comments = requestToString(request);
-      if (comments.equals("")) {
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-            "No comments to analyze. Request must be a non-empty array");
-        isValid = false;
-      }
-      commentsScore = calculateSentimentScore(comments);
+      comments = requestToString(request);
     } catch (JsonSyntaxException e) {
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-      isValid = false;
+      System.err.println(e.getMessage());
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+          "Request to /sentiment must be an array of Strings.");
+      return;
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+          "Converting request to String failed.");
+      return;
+    }
+
+    if (comments.equals("")) {
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+          "No comments to analyze. Request must be a non-empty array.");
+      return;
+    }
+
+    try {
+      commentsScore = calculateSentimentScore(comments);
     } catch (ApiException e) {
+      System.err.println(e.getMessage());
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
           "Language service client failed.");
-      isValid = false;
+      return;
     }
 
-    if (isValid) {
-      VideoAnalysis videoAnalysis = new VideoAnalysis(commentsScore);
-      String json = new Gson().toJson(videoAnalysis);
+    VideoAnalysis videoAnalysis = new VideoAnalysis(commentsScore);
+    String json = new Gson().toJson(videoAnalysis);
 
-      response.setContentType("application/json;");
-      response.getWriter().println(json);
-    }
-    
+    response.setContentType("application/json;");
+    response.getWriter().println(json);
   }
 
   /**
@@ -74,11 +83,7 @@ public class SentimentServlet extends HttpServlet {
   /**
    * Calculates sentiment score of text. The score is from -1 (negative) to +1 (positive).
    */ 
-  private Float calculateSentimentScore(String text) throws IOException {
-    if (text == null) {
-      return null;
-    }
-
+  private Float calculateSentimentScore(String text) {
     Document doc = Document.newBuilder()
         .setContent(text)
         .setTypeValue(Document.Type.PLAIN_TEXT_VALUE)
