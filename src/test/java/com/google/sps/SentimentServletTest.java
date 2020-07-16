@@ -30,6 +30,7 @@ import static org.mockito.Mockito.*;
 public final class SentimentServletTest {
 
   private final Float SCORE = new Float(0.05f);
+  private final String VALID_COMMENTS = "[\"foo\",\"bar\"]";
   private StringWriter stringWriter;
   private PrintWriter writer;
 
@@ -49,14 +50,34 @@ public final class SentimentServletTest {
   }
 
   /**
-   * A Json String in the form of an array should be converted to a String of period separated
-   * comments. A sentiment score should be calculated and the score should be printed in a Json
-   * object. 
+   * A Json String in the form of a multi-element array should be converted to a String of period
+   * separated comments. A sentiment score should be calculated and the score should be printed in
+   * a Json object. 
    * Ex. "[foo, bar]" -> "{"commentScore":0.05}" 
    */
   @Test
-  public void jsonArrayPrintsVideoAnalysisJsonObject() throws IOException {
+  public void jsonMultiElementArrayPrintsVideoAnalysisJsonObject() throws IOException {
     String json = "[\"a\",\"b\",\"c\"]"; // "["a","b","c"]"
+    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
+    when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
+        .thenReturn(sentimentMock);
+    when(sentimentMock.getScore()).thenReturn(SCORE);
+    doNothing().when(languageServiceMock).close();
+
+    sentimentServlet.doGet(requestMock, responseSpy);
+
+    Assert.assertEquals(stringWriter.toString(), "{\"commentScore\":0.05}\n");
+  }
+
+  /**
+   * A Json String in the form of a single-element array should be converted to a String of period
+   * separated comments. A sentiment score should be calculated and the score should be printed in
+   * a Json object. 
+   * Ex. "[foo]" -> "{"commentScore":0.05}" 
+   */
+  @Test
+  public void jsonSingleElementArrayPrintsVideoAnalysisJsonObject() throws IOException {
+    String json = "[\"a\"]"; // "["a"]"
     when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
     when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
         .thenReturn(sentimentMock);
@@ -79,7 +100,8 @@ public final class SentimentServletTest {
     
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    verify(responseSpy, times(1)).sendError(eq(HttpServletResponse.SC_BAD_REQUEST), anyString());
+    verify(responseSpy).sendError(HttpServletResponse.SC_BAD_REQUEST, 
+        "Request to /sentiment must be an array of Strings.");
   }
 
   /**
@@ -92,7 +114,8 @@ public final class SentimentServletTest {
     
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    verify(responseSpy, times(1)).sendError(eq(HttpServletResponse.SC_BAD_REQUEST), anyString());
+    verify(responseSpy).sendError(HttpServletResponse.SC_BAD_REQUEST,
+        "No comments to analyze. Request must be a non-empty array.");
   }
 
   /**
@@ -100,14 +123,27 @@ public final class SentimentServletTest {
    */
   @Test
   public void languageServiceFailureSendsHttpResponseError() throws IOException {
-    String json = "[\"a\",\"b\",\"c\"]";
-    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
+    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(VALID_COMMENTS)));
     when(languageServiceMock.analyzeSentiment(any(Document.class))).thenThrow(ApiException.class);
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    verify(responseSpy, times(1))
-        .sendError(eq(HttpServletResponse.SC_INTERNAL_SERVER_ERROR), anyString());
+    verify(responseSpy).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+        "Language service client failed.");
+  }
+
+  /**
+   * If the requestToString() method fails and throws an IOException, the exception is caught and a
+   * 500 error is sent.
+   */
+  @Test
+  public void requestToStringExceptionSendsHttpResponseError() throws IOException {
+    when(requestMock.getReader()).thenThrow(IOException.class);
+
+    sentimentServlet.doGet(requestMock, responseSpy);
+
+    verify(responseSpy).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+        "Converting request to String failed.");
   }
 
 }
