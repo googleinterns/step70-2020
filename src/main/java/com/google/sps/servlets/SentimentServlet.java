@@ -21,6 +21,10 @@ public class SentimentServlet extends HttpServlet {
 
   private LanguageServiceClient languageService;
   private Sentiment sentiment;
+  private final String INVALID_INPUT_ERROR = "Request to /sentiment must be an array of Strings.";
+  private final String CONVERT_STRING_ERROR = "Converting request to String failed.";
+  private final String EMPTY_STRING_ERROR = "No comments to analyze. Request must be a non-empty array.";
+  private final String NLP_API_ERROR = "Language service client failed.";
 
   public SentimentServlet() throws IOException {
     languageService = LanguageServiceClient.create();
@@ -35,19 +39,16 @@ public class SentimentServlet extends HttpServlet {
       comments = requestToString(request);
     } catch (JsonSyntaxException e) {
       System.err.println(e.getMessage());
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-          "Request to /sentiment must be an array of Strings.");
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, INVALID_INPUT_ERROR);
       return;
     } catch (IOException e) {
       System.err.println(e.getMessage());
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-          "Converting request to String failed.");
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, CONVERT_STRING_ERROR);
       return;
     }
 
-    if (comments.equals("")) {
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-          "No comments to analyze. Request must be a non-empty array.");
+    if (comments.isEmpty()) {
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, EMPTY_STRING_ERROR);
       return;
     }
 
@@ -55,8 +56,7 @@ public class SentimentServlet extends HttpServlet {
       commentsScore = calculateSentimentScore(comments);
     } catch (ApiException e) {
       System.err.println(e.getMessage());
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-          "Language service client failed.");
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, NLP_API_ERROR);
       return;
     }
 
