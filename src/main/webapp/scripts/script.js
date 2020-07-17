@@ -1,3 +1,5 @@
+const API_KEY = '';
+
 const TITLE_TEXT = 'Capstone Project' //TODO: change to actual name
 const MENU_ITEMS = [
   new MenuItem('Trending', 'popular.html', 'whatshot'),
@@ -7,6 +9,15 @@ const MENU_ITEMS = [
 
 createHeader();
 createMenu();
+
+function updateDom(text, containerId) {
+  const containerDOM = document.getElementById(containerId);
+  containerDOM.innerText = text;
+}
+
+function getDomValue(domId) {
+  return document.getElementById(domId).value;
+}
 
 function MenuItem (name, link, icon) {
   this.name = name;
