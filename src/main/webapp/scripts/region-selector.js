@@ -1,9 +1,9 @@
 function getRegions() {
   return gapi.client.youtube.i18nRegions.list({
-    "part": [
-      "snippet"
+    'part': [
+      'snippet'
     ],
-    "hl": "es_MX"
+    'hl': 'es_MX'
   })
   .then((response) => {
     return response.result;
