@@ -1,7 +1,7 @@
-function makeRegionSelect(snippet){
-  const regionSelectDOM = document.getElementById('region');
+function makeSelectList(value, text, selectId) {
+  const selectionDOM = document.getElementById(selectId);
   const option = document.createElement('option');
-  option.value = snippet.gl;
-  option.innerText = snippet.name;
-  regionSelectDOM.appendChild(option);
+  option.value = value;
+  option.innerText = text;
+  selectionDOM.appendChild(option);
 }
