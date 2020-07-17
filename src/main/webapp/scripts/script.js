@@ -2,9 +2,9 @@ const API_KEY = '';
 
 const TITLE_TEXT = 'Capstone Project' //TODO: change to actual name
 const MENU_ITEMS = [
-  new MenuItem('Trending', 'popular.html', 'whatshot'),
-  new MenuItem('Positive', 'positive.html', 'grade'),
-  new MenuItem('Check', 'index.html', 'check_circle')
+  {name: 'Trending', link: 'popular.html', icon: 'whatshot'},
+  {name: 'Positive', link: 'positive.html', icon: 'grade'},
+  {name: 'Check', link: 'index.html', icon: 'check_circle'}
 ];
 
 createHeader();
@@ -17,12 +17,6 @@ function updateDom(text, containerId) {
 
 function getDomValue(domId) {
   return document.getElementById(domId).value;
-}
-
-function MenuItem (name, link, icon) {
-  this.name = name;
-  this.link = link;
-  this.icon = icon;
 }
 
 function createHeader() {
