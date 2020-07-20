@@ -1,18 +1,14 @@
 package com.google.sps.data;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 public class VideoAnalysis {
 
-  private final Float commentScore;
+  private final Float score;
 
-  public VideoAnalysis(Float commentScore) {
-    this.commentScore = commentScore;
+  public VideoAnalysis(Float score) {
+    this.score = score;
   }
 
-  public Float getCommentScore() {
-    return commentScore;
+  public Float getScore() {
+    return score;
   }
 }

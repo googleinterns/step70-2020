@@ -1,15 +1,20 @@
 package com.google.sps;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.gax.rpc.ApiException;
 import com.google.cloud.language.v1.Document;
 import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.Sentiment;
+import com.google.sps.servlets.Caption;
+import com.google.sps.servlets.CommentService;
 import com.google.sps.servlets.SentimentServlet;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.List;
+import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.Assert;
@@ -29,11 +34,14 @@ import static org.mockito.Mockito.*;
 
 public final class SentimentServletTest {
 
+  private final String VIDEO_ID = "test id";
   private final Float SCORE = new Float(0.05f);
   private final String VALID_COMMENTS = "[\"foo\",\"bar\"]";
   private StringWriter stringWriter;
   private PrintWriter writer;
 
+  @Mock CommentService commentServiceMock;
+  @Mock Caption captionServiceMock;
   @Mock(answer = Answers.RETURNS_DEEP_STUBS) HttpServletRequest requestMock;
   @Mock(answer = Answers.RETURNS_DEEP_STUBS) LanguageServiceClient languageServiceMock;
   @Mock(answer = Answers.RETURNS_DEEP_STUBS) Sentiment sentimentMock;
@@ -53,69 +61,127 @@ public final class SentimentServletTest {
    * A Json String in the form of a multi-element array should be converted to a String of period
    * separated comments. A sentiment score should be calculated and the score should be printed in
    * a Json object. 
-   * Ex. "[foo, bar]" -> "{"commentScore":0.05}" 
    */
   @Test
-  public void jsonMultiElementArrayPrintsVideoAnalysisJsonObject() throws IOException {
-    String json = "[\"a\",\"b\",\"c\"]"; // "["a","b","c"]"
-    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
+  public void printsVideoAnalysisJsonObject() throws IOException {
+    List<String> comments = Arrays.asList("foo","bar","foobar");
+    String captions = "foo. bar. foobar.";
+    
+    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(VIDEO_ID)));
+    when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
+    when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
     when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
         .thenReturn(sentimentMock);
     when(sentimentMock.getScore()).thenReturn(SCORE);
     doNothing().when(languageServiceMock).close();
 
+    sentimentServlet.doPost(requestMock, responseSpy);
+
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    Assert.assertEquals(stringWriter.toString(), "{\"commentScore\":0.05}\n");
+    Assert.assertEquals(stringWriter.toString(), "{\"score\":0.05}\n");
   }
 
   /**
-   * A Json String in the form of a single-element array should be converted to a String of period
-   * separated comments. A sentiment score should be calculated and the score should be printed in
-   * a Json object. 
-   * Ex. "[foo]" -> "{"commentScore":0.05}" 
+   * 
    */
   @Test
-  public void jsonSingleElementArrayPrintsVideoAnalysisJsonObject() throws IOException {
-    String json = "[\"a\"]"; // "["a"]"
-    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
+  public void onlyCaptionsPrintsVideoAnalysisJsonObject() throws IOException {
+    List<String> comments = Arrays.asList();
+    String captions = "foo. bar. foobar.";
+    
+    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(VIDEO_ID)));
+    when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
+    when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
     when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
         .thenReturn(sentimentMock);
     when(sentimentMock.getScore()).thenReturn(SCORE);
     doNothing().when(languageServiceMock).close();
 
+    sentimentServlet.doPost(requestMock, responseSpy);
+
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    Assert.assertEquals(stringWriter.toString(), "{\"commentScore\":0.05}\n");
+    Assert.assertEquals(stringWriter.toString(), "{\"score\":0.05}\n");
   }
 
   /**
-   * If the Json String is not in the form of an array, a JsonSyntaxException is caught and a 400
-   * error is sent.
+   * 
    */
   @Test
-  public void notArraySendsHttpResponseError() throws IOException {
-    String json = "foo";
-    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
+  public void onlyCommentsPrintsVideoAnalysisJsonObject() throws IOException {
+    List<String> comments = Arrays.asList("foo","bar","foobar");
+    String captions = "";
     
+    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(VIDEO_ID)));
+    when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
+    when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
+    when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
+        .thenReturn(sentimentMock);
+    when(sentimentMock.getScore()).thenReturn(SCORE);
+    doNothing().when(languageServiceMock).close();
+
+    sentimentServlet.doPost(requestMock, responseSpy);
+
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    verify(responseSpy).sendError(HttpServletResponse.SC_BAD_REQUEST, 
-        "Request to /sentiment must be an array of Strings.");
+    Assert.assertEquals(stringWriter.toString(), "{\"score\":0.05}\n");
+  }
+
+  @Test
+  public void noCommentsOrCaptionsSendsHttpResponseError() throws IOException {
+    List<String> comments = Arrays.asList();
+    String captions = "";
+    
+    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(VIDEO_ID)));
+    when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
+    when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
+
+    sentimentServlet.doPost(requestMock, responseSpy);
+
+    verify(responseSpy).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+        "No comments or captions available to analyze.");
   }
 
   /**
-   * If the Json String is an empty array (ex. no comments), a 400 error is sent.
+   * When CommentService throws an IllegalArgumentException and a 500 error is sent.
    */
   @Test
-  public void emptyArraySendsHttpResponseError() throws IOException {
-    String json = "[]";
-    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
-    
-    sentimentServlet.doGet(requestMock, responseSpy);
+  public void invalidVideoIdSendsHttpResponseError() throws IOException {
+    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(VIDEO_ID)));
+    when(commentServiceMock.getCommentsFromId(VIDEO_ID))
+        .thenThrow(IllegalArgumentException.class);
+
+    sentimentServlet.doPost(requestMock, responseSpy);
 
     verify(responseSpy).sendError(HttpServletResponse.SC_BAD_REQUEST,
-        "No comments to analyze. Request must be a non-empty array.");
+        "Video is private or does not exist.");
+  }
+
+  /**
+   * CommentService throws an GoogleJsonResponseException, a 500 error is sent and only the
+   * captions are analyzed.
+   */
+  @Test
+  public void commentRetrievalFailureSendsHttpResponseError() throws IOException {
+    String captions = "foo. bar. foobar.";
+
+    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(VIDEO_ID)));
+    when(commentServiceMock.getCommentsFromId(VIDEO_ID))
+        .thenThrow(GoogleJsonResponseException.class);
+    when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
+    when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
+        .thenReturn(sentimentMock);
+    when(sentimentMock.getScore()).thenReturn(SCORE);
+    doNothing().when(languageServiceMock).close();
+
+    sentimentServlet.doPost(requestMock, responseSpy);
+
+    sentimentServlet.doGet(requestMock, responseSpy);
+
+    verify(responseSpy).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+        "Comments could not be retrieved.");
+    Assert.assertEquals(stringWriter.toString(), "{\"score\":0.05}\n");
   }
 
   /**
@@ -123,27 +189,31 @@ public final class SentimentServletTest {
    */
   @Test
   public void languageServiceFailureSendsHttpResponseError() throws IOException {
-    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(VALID_COMMENTS)));
+    List<String> comments = Arrays.asList("foo","bar","foobar");
+    String captions = "foo. bar. foobar.";
+    
+    when(requestMock.getReader()).thenReturn(new BufferedReader(new StringReader(VIDEO_ID)));
+    when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
+    when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
     when(languageServiceMock.analyzeSentiment(any(Document.class))).thenThrow(ApiException.class);
 
-    sentimentServlet.doGet(requestMock, responseSpy);
+    sentimentServlet.doPost(requestMock, responseSpy);
 
     verify(responseSpy).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
         "Language service client failed.");
   }
 
   /**
-   * If the requestToString() method fails and throws an IOException, the exception is caught and a
-   * 500 error is sent.
+   * If getReader() fails and throws an IOException, a 500 error is sent.
    */
   @Test
-  public void requestToStringExceptionSendsHttpResponseError() throws IOException {
+  public void requestGetReaderFailureSendsHttpResponseError() throws IOException {
     when(requestMock.getReader()).thenThrow(IOException.class);
 
-    sentimentServlet.doGet(requestMock, responseSpy);
+    sentimentServlet.doPost(requestMock, responseSpy);
 
     verify(responseSpy).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-        "Converting request to String failed.");
+        "Reading video ID failed.");
   }
 
 }
