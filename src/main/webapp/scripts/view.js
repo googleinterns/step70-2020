@@ -5,10 +5,10 @@ const authorizeButton = document.getElementById('authorize-button');
 const videoId = 'gjKpAAezWQA';
 
 /** Textbox that allows user to input comments */
-const commentElement = document.getElementById('comment-text');
+const postCommentElement = document.getElementById('comment-text');
 
 /** Container that holds the success/error message */
-const resultContainer = document.getElementById('result-text');
+const postResultContainer = document.getElementById('result-text');
 
 /**
  * Overwrite the innerText of a DOM element identified by its Id.
@@ -54,16 +54,16 @@ function updateSigninStatus(isSignedIn, handleAuthClick, handleSignoutClick, han
  */
 function failedInitCallback(err) {
     console.error('init error', err)
-    updateDom('Failed to initialize client', resultContainer)
+    updateDom('Failed to initialize client', postResultContainer)
 }
 
 /**
  * Display 'successful' when the comment has been posted.
  * @exports
- * @param {*} data 
+ * @param {*} data content is ignored
  */
 function successfulApiCallback(data) {
-    updateDom('successful', resultContainer);
+    updateDom('successful', postResultContainer);
 }
 
 /**
@@ -73,7 +73,7 @@ function successfulApiCallback(data) {
  */
 function failedApiCallback(err) {
     console.error('execution error ', err);
-    updateDom(err, resultContainer);
+    updateDom(err, postResultContainer);
 }
 
-export { videoId, commentElement, failedInitCallback, successfulApiCallback, failedApiCallback, updateSigninStatus };
+export { videoId, postCommentElement, failedInitCallback, successfulApiCallback, failedApiCallback, updateSigninStatus };

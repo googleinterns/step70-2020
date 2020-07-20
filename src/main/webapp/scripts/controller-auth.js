@@ -1,5 +1,5 @@
 import { postVideoComment } from '/scripts/post-comment.js';
-import { videoId, commentElement, failedInitCallback, successfulApiCallback, failedApiCallback, updateSigninStatus } from '/scripts/view.js';
+import { videoId, postCommentElement, failedInitCallback, successfulApiCallback, failedApiCallback, updateSigninStatus } from '/scripts/view.js';
 
 /** API key provied by GCP to authenticate the client */
 const apiKey = '';
