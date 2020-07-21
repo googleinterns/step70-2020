@@ -53,8 +53,8 @@ function updateSigninStatus(isSignedIn, handleAuthClick, handleSignoutClick, han
  * @param {Error} err 
  */
 function failedInitCallback(err) {
-    console.error('init error', err)
-    updateDom('Failed to initialize client', postResultContainer)
+    console.error('init error', err);
+    updateDom('Failed to initialize client', postResultContainer);
 }
 
 /**
@@ -63,7 +63,7 @@ function failedInitCallback(err) {
  * @param {*} data content is ignored
  */
 function successfulApiCallback(data) {
-    updateDom('successful', postResultContainer);
+    updateDom('Successful', postResultContainer);
 }
 
 /**

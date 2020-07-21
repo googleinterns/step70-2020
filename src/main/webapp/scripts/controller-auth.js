@@ -20,7 +20,7 @@ function handleClientLoad() {
  * And listen for changed in the signin status.
  */
 function initClient() {
-  gapi.client.init({
+  return gapi.client.init({
     apiKey,
     discoveryDocs,
     clientId,
@@ -53,10 +53,13 @@ function handleSignoutClick(event) {
 
 /** Handler that posts the comment and processes the result */
 function handleCommentClick(event) {
-  postVideoComment(videoId, postCommentElement.value)
+  return postVideoComment(videoId, postCommentElement.value)
     .then(successfulApiCallback)
     .catch(failedApiCallback);
 }
 
 // Entry point
 handleClientLoad();
+
+// For testing purpose
+export { initClient, handleAuthClick, handleSignoutClick, handleCommentClick };
