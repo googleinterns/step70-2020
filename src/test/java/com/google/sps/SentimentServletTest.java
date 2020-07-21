@@ -57,9 +57,8 @@ public final class SentimentServletTest {
   }
 
   /**
-   * A Json String in the form of a multi-element array should be converted to a String of period
-   * separated comments. A sentiment score should be calculated and the score should be printed in
-   * a Json object. 
+   * A sentiment score should be calculated for a list of comments and String of captions and the
+   * score should be printed in a Json object. 
    */
   @Test
   public void printsVideoAnalysisJsonObject() throws IOException {
@@ -82,7 +81,8 @@ public final class SentimentServletTest {
   }
 
   /**
-   * 
+   * If captions are available and comments are not, a sentiment score should still calculated and
+   * the score should be printed in a Json object. 
    */
   @Test
   public void onlyCaptionsPrintsVideoAnalysisJsonObject() throws IOException {
@@ -105,7 +105,8 @@ public final class SentimentServletTest {
   }
 
   /**
-   * 
+   * If comments are available and captions are not, a sentiment score should still calculated and
+   * the score should be printed in a Json object. 
    */
   @Test
   public void onlyCommentsPrintsVideoAnalysisJsonObject() throws IOException {
@@ -127,6 +128,9 @@ public final class SentimentServletTest {
     Assert.assertEquals(expected, stringWriter.toString());
   }
 
+  /**
+   * If there's no comments or captions available to analyze, a 500 error should be sent. 
+   */
   @Test
   public void noCommentsOrCaptionsSendsHttpResponseError() throws IOException {
     List<String> comments = Arrays.asList();
@@ -146,7 +150,7 @@ public final class SentimentServletTest {
   }
 
   /**
-   * When CommentService throws an IllegalArgumentException and a 500 error is sent.
+   * When CommentService throws an IllegalArgumentException, a 500 error should be sent.
    */
   @Test
   public void invalidVideoIdSendsHttpResponseError() throws IOException {
@@ -161,7 +165,7 @@ public final class SentimentServletTest {
   }
 
   /**
-   * CommentService throws an GoogleJsonResponseException, a 500 error is sent and only the
+   * CommentService throws an GoogleJsonResponseException, a 500 error should be sent and only the
    * captions are analyzed.
    */
   @Test
@@ -187,7 +191,7 @@ public final class SentimentServletTest {
   }
 
   /**
-   * If the Natural Language API fails and throws an ApiException, a 500 error is sent.
+   * If the Natural Language API fails and throws an ApiException, a 500 error should be sent.
    */
   @Test
   public void languageServiceFailureSendsHttpResponseError() throws IOException {
