@@ -26,7 +26,6 @@ public class SentimentServlet extends HttpServlet {
   private Caption captionService;
   private LanguageServiceClient languageService;
   private Sentiment sentiment;
-  private VideoAnalysis videoAnalysis;
   private final String INVALID_INPUT_ERROR = "Video is private or does not exist.";
   private final String COMMENTS_FAILED_ERROR = "Comments could not be retrieved.";
   private final String NLP_API_ERROR = "Language service client failed.";
@@ -41,21 +40,7 @@ public class SentimentServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String json = new Gson().toJson(videoAnalysis);
-
-    response.setContentType("application/json;");
-    response.getWriter().println(json);
-  }
-
-  @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String videoId;
-    try {
-      videoId = request.getReader().readLine();
-    } catch (IOException e) {
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, READER_ERROR);
-      return;
-    }
+    String videoId = request.getParameter("video-id");
     
     List<String> commentsList = new ArrayList<>();
     try {
@@ -73,6 +58,12 @@ public class SentimentServlet extends HttpServlet {
 
     if (comments.isEmpty() && captions.isEmpty()) {
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, NO_DATA_ERROR);
+
+      VideoAnalysis videoAnalysis = new VideoAnalysis(null, false);
+      String json = new Gson().toJson(videoAnalysis);
+
+      response.setContentType("application/json;");
+      response.getWriter().println(json);
       return;
     }
 
@@ -88,7 +79,11 @@ public class SentimentServlet extends HttpServlet {
       return;
     }
 
-    videoAnalysis = new VideoAnalysis(score);
+    VideoAnalysis videoAnalysis = new VideoAnalysis(score, true);
+    String json = new Gson().toJson(videoAnalysis);
+
+    response.setContentType("application/json;");
+    response.getWriter().println(json);
   }
 
   /**
