@@ -29,7 +29,7 @@ public class Caption {
         continue;
       }
     }
-    return null;
+    return "";
   }
 
   private String parseXmlFromStream(InputStream inputStream)

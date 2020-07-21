@@ -1,7 +1,7 @@
 package com.google.sps.servlets;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
@@ -70,7 +70,7 @@ public final class CaptionTest {
 
     String actual = caption.getCaptionFromId(VIDEO_ID);
 
-    assertNull(actual);
+    assertTrue(actual.isEmpty());
   }
 
   @Test
@@ -91,7 +91,7 @@ public final class CaptionTest {
 
     String actual = caption.getCaptionFromId(null);
 
-    assertNull(actual);
+    assertTrue(actual.isEmpty());
   }
 
   @Test
@@ -100,7 +100,7 @@ public final class CaptionTest {
 
     String actual = caption.getCaptionFromId(VIDEO_ID);
 
-    assertNull(actual);
+    assertTrue(actual.isEmpty());
   }
 
   @Test
@@ -109,7 +109,7 @@ public final class CaptionTest {
 
     String actual = caption.getCaptionFromId(VIDEO_ID);
 
-    assertNull(actual);
+    assertTrue(actual.isEmpty());
   }
 
   @Test
@@ -119,7 +119,7 @@ public final class CaptionTest {
 
     String actual = caption.getCaptionFromId(VIDEO_ID);
 
-    assertNull(actual);
+    assertTrue(actual.isEmpty());
   }
 
 }
