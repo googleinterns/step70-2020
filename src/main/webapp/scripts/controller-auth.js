@@ -62,4 +62,4 @@ function handleCommentClick(event) {
 handleClientLoad();
 
 // For testing purpose
-export { initClient, handleAuthClick, handleSignoutClick, handleCommentClick };
+export { initClient };
