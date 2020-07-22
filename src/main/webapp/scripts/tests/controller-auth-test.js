@@ -20,25 +20,39 @@ QUnit.test('When init fails, displays the authorization button and the error mes
   assert.dom('#result-text').hasProperty('innerText', 'Failed to initialize client');
 });
 
-QUnit.test('When signed in, there should be sign-out and comment buttons', function (assert) {
-  const fakeSignOut = sinon.fake();
-  const fakeHandleCommentClick = sinon.fake();
+QUnit.test('When signed in, there should be sign-out and comment buttons', async function (assert) {
+  sinon.stub(gapi.client, 'init').returns(Promise.resolve());
+  sinon.stub(gapi.auth2, 'getAuthInstance').returns(
+    {
+      'isSignedIn':
+      {
+        'get': () => { return true; },
+        'listen': () => { },
+      }
+    });
 
-  view.updateSigninStatus(true, () => { }, fakeSignOut, fakeHandleCommentClick);
+  await controller.initClient();
 
   assert.dom('#authorize-button').hasProperty('innerText', 'Sign out');
-  assert.dom('#authorize-button').hasProperty('onclick', fakeSignOut);
-  assert.dom('#comment-button').hasProperty('onclick', fakeHandleCommentClick);
+  assert.dom('#authorize-button').hasProperty('onclick', controller.handleSignoutClick);
+  assert.dom('#comment-button').hasProperty('onclick', controller.handleCommentClick);
 });
 
-QUnit.test('When signed out, there should be an authorization button', function (assert) {
-  const fakeAuth = sinon.fake();
-  const fakeHandleCommentClick = sinon.fake();
+QUnit.test('When signed out, there should be an authorization button', async function (assert) {
+  sinon.stub(gapi.client, 'init').returns(Promise.resolve());
+  sinon.stub(gapi.auth2, 'getAuthInstance').returns(
+    {
+      'isSignedIn':
+      {
+        'get': () => { return false; },
+        'listen': () => { },
+      }
+    });
 
-  view.updateSigninStatus(false, fakeAuth, () => { }, fakeHandleCommentClick);
+  await controller.initClient();
 
   assert.dom('#authorize-button').hasProperty('innerText', 'Authorize');
-  assert.dom('#authorize-button').hasProperty('onclick', fakeAuth);
+  assert.dom('#authorize-button').hasProperty('onclick', controller.handleAuthClick);
   assert.dom('#comment-button').doesNotExist();
 });
 
@@ -67,7 +81,13 @@ QUnit.test('When postVideoComment succeeds, the success message should be displa
 class CustomGapi {
   constructor() {
     this.client = new CustomClient();
+    this.auth2 = new Auth2();
   }
+}
+
+class Auth2 {
+  constructor() { }
+  getAuthInstance() { }
 }
 
 class CustomClient {

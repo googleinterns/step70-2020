@@ -45,6 +45,7 @@ function updateSigninStatus(isSignedIn, handleAuthClick, handleSignoutClick, han
         const commentButton = document.getElementById('comment-button');
         commentButton && commentButton.remove();
     }
+    updateDom('', postResultContainer);
 }
 
 /**
