@@ -40,13 +40,14 @@ public final class SentimentServletTest {
 
   @Spy HttpServletResponse responseSpy;
 
-  @InjectMocks SentimentServlet sentimentServlet;
+  @Spy @InjectMocks SentimentServlet sentimentServlet;
 
   @Before
-  public void setUp() throws IOException {
+  public void setUp() throws IOException, Exception {
     stringWriter = new StringWriter();
     writer = new PrintWriter(stringWriter);
     when(responseSpy.getWriter()).thenReturn(writer);
+    when(sentimentServlet.createLanguageServiceClient()).thenReturn(languageServiceMock);
   }
 
   /**

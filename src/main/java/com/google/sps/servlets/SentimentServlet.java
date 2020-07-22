@@ -83,7 +83,8 @@ public class SentimentServlet extends HttpServlet {
   /**
    * Calculates sentiment score of text. The score is from -1 (negative) to +1 (positive).
    */ 
-  private Float calculateSentimentScore(String text) {
+  private Float calculateSentimentScore(String text) throws ApiException, IOException {
+    LanguageServiceClient languageService = createLanguageServiceClient();
     Document doc = Document.newBuilder()
         .setContent(text)
         .setTypeValue(Document.Type.PLAIN_TEXT_VALUE)
@@ -93,5 +94,9 @@ public class SentimentServlet extends HttpServlet {
     languageService.close();
 
     return score;
+  }
+
+  public LanguageServiceClient createLanguageServiceClient() throws IOException {
+    return LanguageServiceClient.create();
   }
 }
