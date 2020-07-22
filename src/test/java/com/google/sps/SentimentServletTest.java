@@ -129,10 +129,11 @@ public final class SentimentServletTest {
   }
 
   /**
-   * If there's no comments or captions available to analyze, a 500 error should be sent. 
+   * If there's no comments or captions available to analyze, a Json object should still be printed
+   * but without a score value (becaues score == null) and dataAvailable == false. 
    */
   @Test
-  public void noCommentsOrCaptionsSendsHttpResponseError() throws IOException {
+  public void noCommentsOrCaptionsPrintsJsonObjectWithoutScore() throws IOException {
     List<String> comments = Arrays.asList();
     String captions = "";
     
@@ -144,8 +145,6 @@ public final class SentimentServletTest {
     
     String expectedNoData = "{\"dataAvailable\":false}\n";
 
-    verify(responseSpy).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-        "No comments or captions available to analyze.");
     Assert.assertEquals(expectedNoData, stringWriter.toString());
   }
 
