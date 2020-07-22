@@ -7,9 +7,6 @@ const MENU_ITEMS = [
   {name: 'Check', link: 'index.html', icon: 'check_circle'}
 ];
 
-createHeader();
-createMenu();
-
 function updateDom(text, containerId) {
   const containerDOM = document.getElementById(containerId);
   containerDOM.innerText = text;
