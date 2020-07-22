@@ -5,5 +5,5 @@ QUnit.test('createHeader', function(assert) {
 
 QUnit.test('createMenu', function(assert) {
   createMenu();
-  assert.dom('li').exists({ count: 3});
+  assert.dom('i').exists({ count: 3});
 });
