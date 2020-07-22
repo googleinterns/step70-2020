@@ -1,4 +1,3 @@
-import * as view from '/scripts/view.js';
 import * as controller from '/scripts/controller-auth.js';
 
 // Test (controller-auth.js and) view.js
@@ -22,14 +21,7 @@ QUnit.test('When init fails, displays the authorization button and the error mes
 
 QUnit.test('When signed in, there should be sign-out and comment buttons', async function (assert) {
   sinon.stub(gapi.client, 'init').returns(Promise.resolve());
-  sinon.stub(gapi.auth2, 'getAuthInstance').returns(
-    {
-      'isSignedIn':
-      {
-        'get': () => { return true; },
-        'listen': () => { },
-      }
-    });
+  sinon.stub(gapi.auth2, 'getAuthInstance').returns(fakeGetAuthInstance(true));
 
   await controller.initClient();
 
@@ -40,14 +32,7 @@ QUnit.test('When signed in, there should be sign-out and comment buttons', async
 
 QUnit.test('When signed out, there should be an authorization button', async function (assert) {
   sinon.stub(gapi.client, 'init').returns(Promise.resolve());
-  sinon.stub(gapi.auth2, 'getAuthInstance').returns(
-    {
-      'isSignedIn':
-      {
-        'get': () => { return false; },
-        'listen': () => { },
-      }
-    });
+  sinon.stub(gapi.auth2, 'getAuthInstance').returns(fakeGetAuthInstance(false));
 
   await controller.initClient();
 
@@ -108,4 +93,14 @@ class CustomError extends Error {
     super();
     this.result = { 'error': { 'message': msg, } };
   }
+}
+
+function fakeGetAuthInstance(isSignedIn) {
+  return {
+    'isSignedIn':
+    {
+      'get': () => { return isSignedIn; },
+      'listen': () => { },
+    }
+  };
 }
