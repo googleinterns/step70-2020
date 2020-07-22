@@ -18,20 +18,16 @@ public class VideoAnalysis {
     }
 
     public VideoAnalysis build() {
-      VideoAnalysis videoAnalysis = new VideoAnalysis();
-      videoAnalysis.score = this.score;
-      videoAnalysis.dataAvailable = this.dataAvailable;
-
-      return videoAnalysis;
+      return new VideoAnalysis(this);
     }
   }
 
-  private Float score;
-  private boolean dataAvailable;
+  private final Float score;
+  private final boolean dataAvailable;
 
-  private VideoAnalysis() {
-    this.score = score;
-    this.dataAvailable = dataAvailable;
+  private VideoAnalysis(Builder builder) {
+    this.score = builder.score;
+    this.dataAvailable = builder.dataAvailable;
   }
 
   public Float getScore() {
@@ -42,11 +38,7 @@ public class VideoAnalysis {
     return dataAvailable;
   }
 
-  public void setScore(Float score) {
-    this.score = score;
-  }
-
-  public void setDataAvailable(boolean dataAvailable) {
-    this.dataAvailable = dataAvailable;
+  public static Builder builder() {
+    return new Builder();
   }
 }

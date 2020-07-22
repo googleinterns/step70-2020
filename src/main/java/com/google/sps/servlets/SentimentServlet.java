@@ -57,7 +57,7 @@ public class SentimentServlet extends HttpServlet {
     String captions = captionService.getCaptionFromId(videoId);
 
     if (comments.isEmpty() && captions.isEmpty()) {
-      VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+      VideoAnalysis videoAnalysis = VideoAnalysis.builder()
           .setScore(null)
           .setDataAvailable(false)
           .build();
@@ -80,7 +80,7 @@ public class SentimentServlet extends HttpServlet {
       return;
     }
 
-    VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+    VideoAnalysis videoAnalysis = VideoAnalysis.builder()
         .setScore(score)
         .setDataAvailable(true)
         .build();
