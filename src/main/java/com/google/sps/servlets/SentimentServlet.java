@@ -57,9 +57,10 @@ public class SentimentServlet extends HttpServlet {
     String captions = captionService.getCaptionFromId(videoId);
 
     if (comments.isEmpty() && captions.isEmpty()) {
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, NO_DATA_ERROR);
-
-      VideoAnalysis videoAnalysis = new VideoAnalysis(null, false);
+      VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+          .setScore(null)
+          .setDataAvailable(false)
+          .build();
       String json = new Gson().toJson(videoAnalysis);
 
       response.setContentType("application/json;");
@@ -79,7 +80,10 @@ public class SentimentServlet extends HttpServlet {
       return;
     }
 
-    VideoAnalysis videoAnalysis = new VideoAnalysis(score, true);
+    VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+        .setScore(score)
+        .setDataAvailable(true)
+        .build();
     String json = new Gson().toJson(videoAnalysis);
 
     response.setContentType("application/json;");
