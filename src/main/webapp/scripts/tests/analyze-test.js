@@ -17,8 +17,9 @@ QUnit.testStart(() => {
 });
 
 QUnit.test('DOM updates with sentiment score', function (assert) {
+  console.log('sentiment score');
   const body = { 'score': SCORE, 'scoreAvailable': true };
-  const response = { json: () => { return body }, status: 200 };
+  const response = { json: () => { return body }, status: 200, ok: true };
   fetchStub.returns(Promise.resolve(response));
 
   const done = assert.async();
@@ -31,7 +32,8 @@ QUnit.test('DOM updates with sentiment score', function (assert) {
 });
 
 QUnit.test('DOM updates with error', function (assert) {
-  const response = { status: 500, statusText: '>299 error' };
+  console.log('error');
+  const response = { status: 500, statusText: '>299 error', ok: false };
   fetchStub.returns(Promise.resolve(response));
 
   const done = assert.async();
@@ -43,15 +45,16 @@ QUnit.test('DOM updates with error', function (assert) {
 });
 
 QUnit.test('DOM updates without score', function (assert) {
+  console.log('no score');
   const body = { 'scoreAvailable': false };
-  const response = { json: () => { return body }, status: 200 };
+  const response = { json: () => { return body }, status: 200, ok: true };
   fetchStub.returns(Promise.resolve(response));
 
   const done = assert.async()
   analyzeVideo()
   .then((value) => {
-    assert.dom('#sentiment-container')
-        .hasProperty('innerText','We couldn\'t analyze this video! Try again.');
+    assert.dom('#sentiment-container').hasProperty('innerText',
+        'Video has no available captions or comments to analyze.');
     done();
   });
 });

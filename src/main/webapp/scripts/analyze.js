@@ -3,7 +3,7 @@ async function analyzeVideo() {
 
   return fetch(`/sentiment?video-id=${videoId}`)
   .then(response => {
-    if (response.status >= 200 && response.status <= 299) {
+    if (response.ok) {
       return response.json();
     } else {
       throw new Error(response.statusText);
@@ -13,7 +13,7 @@ async function analyzeVideo() {
     if (videoAnalysis.scoreAvailable) {
       updateDom(videoAnalysis.score.toString(), 'sentiment-container');
     } else {
-      updateDom('We couldn\'t analyze this video! Try again.',
+      updateDom('Video has no available captions or comments to analyze.',
           'sentiment-container');
     }
   })
