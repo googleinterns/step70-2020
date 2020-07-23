@@ -59,7 +59,7 @@ public class SentimentServlet extends HttpServlet {
     if (comments.isEmpty() && captions.isEmpty()) {
       VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
           .setScore(null)
-          .setDataAvailable(false)
+          .setScoreAvailable(false)
           .build();
       String json = new Gson().toJson(videoAnalysis);
 
@@ -82,7 +82,7 @@ public class SentimentServlet extends HttpServlet {
 
     VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
         .setScore(score)
-        .setDataAvailable(true)
+        .setScoreAvailable(true)
         .build();
     String json = new Gson().toJson(videoAnalysis);
 

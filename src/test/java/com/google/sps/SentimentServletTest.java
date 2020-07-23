@@ -75,7 +75,7 @@ public final class SentimentServletTest {
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    String expected = "{\"score\":" + df.format(SCORE) + ",\"dataAvailable\":true}\n";
+    String expected = "{\"score\":" + df.format(SCORE) + ",\"scoreAvailable\":true}\n";
 
     Assert.assertEquals(expected, stringWriter.toString());
   }
@@ -99,7 +99,7 @@ public final class SentimentServletTest {
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    String expected = "{\"score\":" + df.format(SCORE) + ",\"dataAvailable\":true}\n";
+    String expected = "{\"score\":" + df.format(SCORE) + ",\"scoreAvailable\":true}\n";
 
     Assert.assertEquals(expected, stringWriter.toString());
   }
@@ -123,14 +123,14 @@ public final class SentimentServletTest {
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    String expected = "{\"score\":" + df.format(SCORE) + ",\"dataAvailable\":true}\n";
+    String expected = "{\"score\":" + df.format(SCORE) + ",\"scoreAvailable\":true}\n";
 
     Assert.assertEquals(expected, stringWriter.toString());
   }
 
   /**
    * If there's no comments or captions available to analyze, a Json object should still be printed
-   * but without a score value (becaues score == null) and dataAvailable == false. 
+   * but without a score value (becaues score == null) and scoreAvailable == false. 
    */
   @Test
   public void noCommentsOrCaptionsPrintsJsonObjectWithoutScore() throws IOException {
@@ -143,7 +143,7 @@ public final class SentimentServletTest {
 
     sentimentServlet.doGet(requestMock, responseSpy);
     
-    String expectedNoData = "{\"dataAvailable\":false}\n";
+    String expectedNoData = "{\"scoreAvailable\":false}\n";
 
     Assert.assertEquals(expectedNoData, stringWriter.toString());
   }
@@ -182,7 +182,7 @@ public final class SentimentServletTest {
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    String expected = "{\"score\":" + df.format(SCORE) + ",\"dataAvailable\":true}\n";
+    String expected = "{\"score\":" + df.format(SCORE) + ",\"scoreAvailable\":true}\n";
 
     verify(responseSpy).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
         "Comments could not be retrieved.");
