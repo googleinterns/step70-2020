@@ -1,44 +1,23 @@
-function analyzeVideo() {
+async function analyzeVideo() {
   const videoId = document.getElementById('video-url').value.split('v=')[1];
-  const baseUrl = window.location.origin;
-  let url = new URL('/sentiment', baseUrl);
-  url.searchParams.append('video-id', videoId);
 
-  fetch(url)
+  return fetch(`/sentiment?video-id=${videoId}`)
   .then(response => {
     if (response.status >= 200 && response.status <= 299) {
       return response.json();
-    } else if (response.status >= 400 && response.status <= 499) {
-      throw InvalidVideoException(response.statusText);
     } else {
-      throw ServletFailureException(response.statusText);
+      throw new Error(response.statusText);
     }
   })
   .then(videoAnalysis => {
-    if (videoAnalysis.dataAvailable) {
-      updateSentimentContainer(videoAnalysis.score);
+    if (videoAnalysis.scoreAvailable) {
+      updateDom(videoAnalysis.score.toString(), 'sentiment-container');
     } else {
-      updateSentimentContainer("We couldn't analyze this video! Try again.")
+      updateDom('We couldn\'t analyze this video! Try again.',
+          'sentiment-container');
     }
   })
   .catch(error => {
-    updateSentimentContainer(error.message);
+    updateDom(error.message, 'sentiment-container');
   });
-}
-
-function updateSentimentContainer(text) {
-  const container = document.getElementById('sentiment-container');
-  container.innerText = text.toString();
-}
-
-function InvalidVideoException(message, metadata) {
-  const error = new Error(message);
-  error.metadata = metadata;
-  return error;
-}
-
-function ServletFailureException(message, metadata) {
-  const error = new Error(message);
-  error.metadata = metadata;
-  return error;
 }
