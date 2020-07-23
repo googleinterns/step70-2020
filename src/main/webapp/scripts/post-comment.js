@@ -20,7 +20,7 @@ function postVideoComment(videoId, commentText) {
  * @private
  * @param {String} videoId 
  * @param {String} commentContent 
- * @returns {json} request body for a POST comment request by video ID
+ * @returns {Object} request body for a POST comment request by video ID
  */
 function buildRequestBody(videoId, commentContent) {
     return {
