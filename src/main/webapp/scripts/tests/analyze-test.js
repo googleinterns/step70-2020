@@ -17,9 +17,11 @@ QUnit.testStart(() => {
 });
 
 QUnit.test('DOM updates with sentiment score', function (assert) {
-  console.log('sentiment score');
-  const body = { 'score': SCORE, 'scoreAvailable': true };
-  const response = { json: () => { return body }, status: 200, ok: true };
+  const body = { score: SCORE, scoreAvailable: true };
+  const blob = new Blob([JSON.stringify(body, null, 2)], {type : 'application/json'});
+  const init = { "status" : 200 , "statusText" : "success" };
+  const response = new Response(blob, init);
+
   fetchStub.returns(Promise.resolve(response));
 
   const done = assert.async();
@@ -32,8 +34,11 @@ QUnit.test('DOM updates with sentiment score', function (assert) {
 });
 
 QUnit.test('DOM updates with error', function (assert) {
-  console.log('error');
-  const response = { status: 500, statusText: '>299 error', ok: false };
+  const body = { };
+  const blob = new Blob([JSON.stringify(body, null, 2)], {type : 'application/json'});
+  const init = { "status" : 500 , "statusText" : ">299 error" };
+  const response = new Response(blob, init);
+
   fetchStub.returns(Promise.resolve(response));
 
   const done = assert.async();
@@ -45,9 +50,11 @@ QUnit.test('DOM updates with error', function (assert) {
 });
 
 QUnit.test('DOM updates without score', function (assert) {
-  console.log('no score');
   const body = { 'scoreAvailable': false };
-  const response = { json: () => { return body }, status: 200, ok: true };
+  const blob = new Blob([JSON.stringify(body, null, 2)], {type : 'application/json'});
+  const init = { "status" : 200 , "statusText" : "success" };
+  const response = new Response(blob, init);
+
   fetchStub.returns(Promise.resolve(response));
 
   const done = assert.async()
