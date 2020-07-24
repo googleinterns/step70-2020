@@ -5,48 +5,48 @@ public class VideoAnalysis {
   public static class Builder {
 
     private Float score;
-    private boolean dataAvailable;
+    private boolean scoreAvailable;
 
     public Builder setScore(Float score){
       this.score = score;
       return this;
     }
 
-    public Builder setDataAvailable(boolean dataAvailable){
-      this.dataAvailable = dataAvailable;
+    public Builder setScoreAvailable(boolean scoreAvailable){
+      this.scoreAvailable = scoreAvailable;
       return this;
     }
 
     public VideoAnalysis build() {
       VideoAnalysis videoAnalysis = new VideoAnalysis();
       videoAnalysis.score = this.score;
-      videoAnalysis.dataAvailable = this.dataAvailable;
+      videoAnalysis.scoreAvailable = this.scoreAvailable;
 
       return videoAnalysis;
     }
   }
 
   private Float score;
-  private boolean dataAvailable;
+  private boolean scoreAvailable;
 
   private VideoAnalysis() {
     this.score = score;
-    this.dataAvailable = dataAvailable;
+    this.scoreAvailable = scoreAvailable;
   }
 
   public Float getScore() {
     return score;
   }
 
-  public boolean getDataAvailable() {
-    return dataAvailable;
+  public boolean getScoreAvailable() {
+    return scoreAvailable;
   }
 
   public void setScore(Float score) {
     this.score = score;
   }
 
-  public void setDataAvailable(boolean dataAvailable) {
-    this.dataAvailable = dataAvailable;
+  public void setScoreAvailable(boolean scoreAvailable) {
+    this.scoreAvailable = scoreAvailable;
   }
 }
