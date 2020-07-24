@@ -1,4 +1,4 @@
-import * as popular from '../popular.js';
+import { addRegionOptions } from '../popular.js';
 
 const mockGetRegionsResponse = {
   items: [
@@ -8,11 +8,10 @@ const mockGetRegionsResponse = {
 
 QUnit.test('region menu display',  function(assert) {
   const done = assert.async();
-  let { addRegionOptions, getRegions } = popular;
-  getRegions = sinon.fake.returns(
+  const getRegions = sinon.fake.returns(
     Promise.resolve(mockGetRegionsResponse)
   );
-  addRegionOptions().then(() => {
+  addRegionOptions(getRegions).then(() => {
     assert.dom('option').hasText('Example');
     done();
   });
