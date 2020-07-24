@@ -47,14 +47,13 @@ public final class SentimentServletTest {
 
   @Spy HttpServletResponse responseSpy;
 
-  @Spy @InjectMocks SentimentServlet sentimentServlet;
+  @InjectMocks SentimentServlet sentimentServlet;
 
   @Before
   public void setUp() throws IOException, Exception {
     stringWriter = new StringWriter();
     writer = new PrintWriter(stringWriter);
     when(responseSpy.getWriter()).thenReturn(writer);
-    when(sentimentServlet.createLanguageServiceClient()).thenReturn(languageServiceMock);
   }
 
   /**
@@ -72,7 +71,6 @@ public final class SentimentServletTest {
     when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
         .thenReturn(sentimentMock);
     when(sentimentMock.getScore()).thenReturn(SCORE);
-    doNothing().when(languageServiceMock).close();
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
@@ -96,7 +94,6 @@ public final class SentimentServletTest {
     when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
         .thenReturn(sentimentMock);
     when(sentimentMock.getScore()).thenReturn(SCORE);
-    doNothing().when(languageServiceMock).close();
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
@@ -120,7 +117,6 @@ public final class SentimentServletTest {
     when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
         .thenReturn(sentimentMock);
     when(sentimentMock.getScore()).thenReturn(SCORE);
-    doNothing().when(languageServiceMock).close();
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
@@ -179,7 +175,6 @@ public final class SentimentServletTest {
     when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
         .thenReturn(sentimentMock);
     when(sentimentMock.getScore()).thenReturn(SCORE);
-    doNothing().when(languageServiceMock).close();
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
