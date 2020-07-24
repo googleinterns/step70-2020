@@ -6,8 +6,8 @@ import { getRegions } from './region-selector.js';
  * @param {function} makes API call for regions list
  * @return {Promise}
  */
-function addRegionOptions(getRegions) {
-  return loadApi().then(getRegions)
+function addRegionOptions() {
+  return loadApi().then(popular.getRegions)
   .then((response) => {
     for(const region of response.items) {
       addOptionToSelectList(region.snippet.gl, region.snippet.name, 'region-select');
@@ -15,4 +15,7 @@ function addRegionOptions(getRegions) {
   });
 }
 
-export { addRegionOptions }
+let popular = { addRegionOptions, getRegions };
+addRegionOptions();
+
+export default popular;
