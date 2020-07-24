@@ -100,7 +100,6 @@ public class SentimentServlet extends HttpServlet {
         .build();
     sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
     Float score = new Float(sentiment.getScore());
-    languageService.close();
 
     return score;
   }
