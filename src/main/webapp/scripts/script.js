@@ -1,4 +1,4 @@
-const API_KEY = 'AIzaSyDfFKa12whmutHemyB1VcVLCQnD2z443bw';
+const API_KEY = '';
 const YOUTUBE_DISCOVERY = 'https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest';
 
 /**
