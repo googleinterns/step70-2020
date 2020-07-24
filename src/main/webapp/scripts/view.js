@@ -1,8 +1,8 @@
 /** Button that triggers authorization/sign out flow */
 const authorizeButton = document.getElementById('authorize-button');
 
-/** Hardcoded test video Id that the comment will be posted to */
-const videoId = 'gjKpAAezWQA';
+/** video Id from textarea input that the comment will be posted to */
+const videoId = document.getElementById('video-url').value.split('v=')[1];;
 
 /** Textbox that allows user to input comments */
 const postCommentElement = document.getElementById('comment-text');
@@ -12,8 +12,8 @@ const postResultContainer = document.getElementById('result-text');
 
 /**
  * Overwrite the innerText of a DOM element identified by its Id.
- * @param {String} text 
- * @param {String} containerDOM 
+ * @param {String} text
+ * @param {String} containerDOM
  */
 function updateDom(text, containerDOM) {
     while (containerDOM.firstChild) {
@@ -25,10 +25,10 @@ function updateDom(text, containerDOM) {
 /**
  * Modify the UI and link handle functions depending on the sign in status.
  * @exports
- * @param {Boolean} isSignedIn 
- * @param {Function} handleAuthClick 
- * @param {Function} handleSignoutClick 
- * @param {Function} handleCommentClick 
+ * @param {Boolean} isSignedIn
+ * @param {Function} handleAuthClick
+ * @param {Function} handleSignoutClick
+ * @param {Function} handleCommentClick
  */
 function updateSigninStatus(isSignedIn, handleAuthClick, handleSignoutClick, handleCommentClick) {
     if (isSignedIn) {
@@ -51,7 +51,7 @@ function updateSigninStatus(isSignedIn, handleAuthClick, handleSignoutClick, han
 /**
  * Error handler when the Google API client fails to load.
  * @exports
- * @param {Error} err 
+ * @param {Error} err
  */
 function failedInitCallback(err) {
     console.error('init error', err);
