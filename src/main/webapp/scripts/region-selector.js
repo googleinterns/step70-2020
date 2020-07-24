@@ -4,9 +4,7 @@ function getRegions() {
       'snippet'
     ]
   })
-  .then((response) => {
-    return response.result;
-  })
+  .then((response) => response.result)
   .catch((error) => {
     console.error('An error occurred getting the region list:', error);
   });

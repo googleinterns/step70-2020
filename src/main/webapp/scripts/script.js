@@ -1,19 +1,17 @@
-const API_KEY = '';
+const API_KEY = 'AIzaSyDfFKa12whmutHemyB1VcVLCQnD2z443bw';
 const YOUTUBE_DISCOVERY = 'https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest';
 
 function loadApi() {
   return new Promise((resolve, reject) => {
-    gapi.load('client', function() {
+    gapi.load('client', () => {
       gapi.client.init({
         'apiKey': API_KEY,
         'discoveryDocs': [YOUTUBE_DISCOVERY]
       })
-      .then(function() {
-        resolve();
-      })
+      .then(resolve)
       .catch((err) => {
         alert('Oops! An error occured with Youtube, please try again later.');
-        console.log('Was not able to load Google API client:', err);
+        console.error('Was not able to load Google API client:', err);
         reject();
       });
     });
