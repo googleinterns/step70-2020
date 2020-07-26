@@ -1,10 +1,8 @@
 import * as controller from '/scripts/controller-auth.js';
+import 'https://apis.google.com/js/api.js';
 
 // Test (controller-auth.js and) view.js
 QUnit.module('Authorization controller', {
-  beforeEach: () => {
-    gapi = new CustomGapi();
-  },
   afterEach: () => {
     sinon.restore();
   }
@@ -74,26 +72,7 @@ QUnit.test('When postVideoComment succeeds, the success message should be displa
 });
 
 
-
 // Helper functions and classes
-class CustomGapi {
-  constructor() {
-    this.client = new CustomClient();
-    this.auth2 = new Auth2();
-  }
-}
-
-class Auth2 {
-  constructor() { }
-  getAuthInstance() { }
-}
-
-class CustomClient {
-  constructor() { }
-  request() { }
-  init() { }
-}
-
 class CustomResponse extends Response {
   constructor() {
     super();
