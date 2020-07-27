@@ -12,6 +12,9 @@ QUnit.test('region menu display',  function(assert) {
     Promise.resolve(mockGetRegionsResponse)
   );
   sinon.replace(popular, 'getRegions', getRegions);
+  const loadApi = sinon.fake.returns(
+    Promise.resolve()
+  );
   popular.addRegionOptions().then(() => {
     assert.dom('option').hasText('Example');
     done();
