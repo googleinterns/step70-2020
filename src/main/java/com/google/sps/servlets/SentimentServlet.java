@@ -29,8 +29,6 @@ public class SentimentServlet extends HttpServlet {
   private final String INVALID_INPUT_ERROR = "Video is private or does not exist.";
   private final String COMMENTS_FAILED_ERROR = "Comments could not be retrieved.";
   private final String NLP_API_ERROR = "Language service client failed.";
-  private final String NO_DATA_ERROR = "No comments or captions available to analyze.";
-  private final String READER_ERROR = "Reading video ID failed.";
 
   public SentimentServlet() throws IOException, GeneralSecurityException {
     languageService = LanguageServiceClient.create();
@@ -52,40 +50,51 @@ public class SentimentServlet extends HttpServlet {
     } catch (GoogleJsonResponseException e) { // some other problem with requesting comment data
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, COMMENTS_FAILED_ERROR);
     }
-    String comments = String.join(". ", commentsList);
 
     String captions = captionService.getCaptionFromId(videoId);
 
-    if (comments.isEmpty() && captions.isEmpty()) {
-      VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
-          .setScore(null)
-          .setScoreAvailable(false)
-          .build();
-      String json = new Gson().toJson(videoAnalysis);
-
+    if (commentsList.isEmpty() && captions.isEmpty()) {
+      String json = createResponseJson(null, false);
       response.setContentType("application/json;");
       response.getWriter().println(json);
       return;
     }
-
-    String text = comments + ". " + captions;
-
-    Float score = null;
-
-    try {
-      score = calculateSentimentScore(text);
-    } catch (ApiException e) {
-      System.err.println(e.getMessage());
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, NLP_API_ERROR);
-      return;
+    
+    Float commentsScore = null;
+    if (!commentsList.isEmpty()) {
+      commentsScore = 0f;
+      for (String comment : commentsList) {
+        try {
+          commentsScore += calculateSentimentScore(comment);
+        } catch (ApiException e) {
+          System.err.println(e.getMessage());
+          response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, NLP_API_ERROR);
+          return;
+        }
+      }
+      commentsScore = commentsScore / commentsList.size();
     }
 
-    VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
-        .setScore(score)
-        .setScoreAvailable(true)
-        .build();
-    String json = new Gson().toJson(videoAnalysis);
+    Float captionsScore = null;
+    if (!captions.isEmpty()) {
+      try {
+        captionsScore = calculateSentimentScore(captions);
+      } catch (ApiException e) {
+        System.err.println(e.getMessage());
+        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, NLP_API_ERROR);
+        return;
+      }
+    }
 
+    String json = "";
+    if (commentsScore != null && captionsScore != null) {
+      json = createResponseJson((commentsScore + captionsScore) / 2f, true);
+    } else if (commentsScore == null && captionsScore != null) {
+      json = createResponseJson(captionsScore, true);
+    } else {
+      json = createResponseJson(commentsScore, true);
+    }
+    
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
@@ -102,5 +111,16 @@ public class SentimentServlet extends HttpServlet {
     Float score = new Float(sentiment.getScore());
 
     return score;
+  }
+
+  /**
+   * Creates a Json object of a VideoAnalysis object.
+   */ 
+  private String createResponseJson(Float score, boolean available) {
+    VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+        .setScore(score)
+        .setScoreAvailable(available)
+        .build();
+    return new Gson().toJson(videoAnalysis);
   }
 }
