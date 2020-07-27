@@ -1,6 +1,9 @@
 /** Button that triggers authorization/sign out flow */
 const authorizeButton = document.getElementById('authorize-button');
 
+/** Video Url textbox that the comment will be posted to */
+const videoUrlElement = document.getElementById('video-url');
+
 /** Textbox that allows user to input comments */
 const postCommentElement = document.getElementById('comment-text');
 
@@ -17,14 +20,6 @@ function updateDom(text, containerDOM) {
         containerDOM.removeChild(containerDOM.firstChild);
     }
     containerDOM.innerText = text;
-}
-
-/**
- * Get the video ID from the URL in the input field
- * @returns {String} comment text
- */
-function getVideoId() {
-  return document.getElementById('video-url').value.split('v=')[1];
 }
 
 /**
@@ -82,4 +77,4 @@ function failedApiCallback(err) {
     updateDom(err, postResultContainer);
 }
 
-export { getVideoId, postCommentElement, failedInitCallback, successfulApiCallback, failedApiCallback, updateSigninStatus };
+export { videoUrlElement, postCommentElement, failedInitCallback, successfulApiCallback, failedApiCallback, updateSigninStatus };

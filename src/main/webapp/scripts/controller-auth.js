@@ -1,5 +1,5 @@
 import { postVideoComment } from '/scripts/post-comment.js';
-import { getVideoId, postCommentElement, failedInitCallback, successfulApiCallback, failedApiCallback, updateSigninStatus } from '/scripts/view.js';
+import { videoUrlElement, postCommentElement, failedInitCallback, successfulApiCallback, failedApiCallback, updateSigninStatus } from '/scripts/view.js';
 
 /** API key provied by GCP to authenticate the client */
 const apiKey = '';
@@ -51,9 +51,14 @@ function handleSignoutClick(event) {
   gapi.auth2.getAuthInstance().signOut();
 }
 
+/** Helper function to convert video URL to ID **/
+function urlToId(videoUrl) {
+  return videoUrl.split('v=')[1];
+}
+
 /** Handler that posts the comment and processes the result */
 function handleCommentClick(event) {
-  return postVideoComment(getVideoId(), postCommentElement.value)
+  return postVideoComment(urlToId(videoUrlElement.value), postCommentElement.value)
     .then(successfulApiCallback)
     .catch(failedApiCallback);
 }
