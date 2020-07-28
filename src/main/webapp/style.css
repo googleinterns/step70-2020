@@ -36,6 +36,9 @@
 a {
   color: black;
 }
+a:hover {
+  color: black;
+}
 
 header {
   padding: 0.75em 5em;
