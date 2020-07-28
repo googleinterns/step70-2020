@@ -35,10 +35,14 @@ function updateSigninStatus(isSignedIn, handleAuthClick, handleSignoutClick, han
         updateDom('Sign out', authorizeButton)
         authorizeButton.onclick = handleSignoutClick;
         const commentButton = document.createElement('button');
-        document.getElementById('comment-button-container').appendChild(commentButton);
         commentButton.id = 'comment-button';
         commentButton.innerText = 'Post a comment';
         commentButton.onclick = handleCommentClick;
+        const commentButtonContainer = document.getElementById('comment-button-container');
+        while (commentButtonContainer.firstChild) {
+            commentButtonContainer.removeChild(commentButtonContainer.firstChild);
+        }
+        commentButtonContainer.appendChild(commentButton);
     } else {
         updateDom('Authorize', authorizeButton);
         authorizeButton.onclick = handleAuthClick;
