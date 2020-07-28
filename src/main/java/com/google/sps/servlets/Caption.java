@@ -1,10 +1,12 @@
 package com.google.sps.servlets;
 
+import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -38,8 +40,11 @@ public class Caption {
     NodeList textDom = doc.getElementsByTagName("text");
     StringBuilder caption = new StringBuilder();
     for (int i = 0; i < textDom.getLength(); i++) {
-      caption.append(textDom.item(i).getFirstChild().getNodeValue());
-      caption.append(" ");
+      Node child = textDom.item(i).getFirstChild();
+      if (child != null) {
+        caption.append(textDom.item(i).getFirstChild().getNodeValue());
+        caption.append(" ");
+      }
     }
     return caption.toString().trim();
   }
