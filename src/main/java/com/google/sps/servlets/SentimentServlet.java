@@ -42,6 +42,13 @@ public class SentimentServlet extends HttpServlet {
     commentService = new CommentService();
   }
 
+  /**
+   * Retrieves the comments and captions of a YouTube video, given its video ID, and calculates the
+   * sentiment score for the captions and each individual comment. Then creates a Json String
+   * containing the score value. 
+   * If a video has comments and captions available to analyze, the score returned is the average
+   * of both scores. Otherwise, only the score of the available data is returned (not averaged)
+   */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String videoId = request.getParameter("video-id");
@@ -66,6 +73,7 @@ public class SentimentServlet extends HttpServlet {
       return;
     }
     
+    // Creates 26 thread pools (25 for comments, 1 for captions)
     ExecutorService executor = Executors.newFixedThreadPool(26);
 
     List<Future> commentScoreFutures = new ArrayList<>();
@@ -87,7 +95,7 @@ public class SentimentServlet extends HttpServlet {
     });
     
     Float commentsScore = 0f;
-    Float captionsScore = null;
+    Float captionsScore = 0f;
 
     try {
       for (Future<Float> future : commentScoreFutures) {
