@@ -9,10 +9,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.sps.data.VideoAnalysis;
 import java.io.IOException;
+import java.lang.InterruptedException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.security.GeneralSecurityException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -60,36 +66,47 @@ public class SentimentServlet extends HttpServlet {
       return;
     }
     
-    Float commentsScore = null;
-    if (!commentsList.isEmpty()) {
-      commentsScore = 0f;
-      for (String comment : commentsList) {
-        try {
-          commentsScore += calculateSentimentScore(comment);
-        } catch (ApiException e) {
-          System.err.println(e.getMessage());
-          response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, NLP_API_ERROR);
-          return;
+    ExecutorService executor = Executors.newFixedThreadPool(26);
+
+    List<Future> commentScoreFutures = new ArrayList<>();
+    for (String comment : commentsList) {
+      Future<Float> future = executor.submit(new Callable<Float>() {
+        @Override
+        public Float call() {
+          return calculateSentimentScore(comment);
         }
+      });
+      commentScoreFutures.add(future);
+    }
+
+    Future<Float> captionFuture = executor.submit(new Callable<Float>() {
+      @Override
+      public Float call() {
+        return calculateSentimentScore(captions);
+      }
+    });
+    
+    Float commentsScore = 0f;
+    Float captionsScore = null;
+
+    try {
+      for (Future<Float> future : commentScoreFutures) {
+        commentsScore += future.get();
       }
       commentsScore = commentsScore / commentsList.size();
+      captionsScore = captionFuture.get();
+    } catch (ExecutionException | InterruptedException e) {
+      System.err.println(e.getMessage());
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, NLP_API_ERROR);
+      return;
     }
 
-    Float captionsScore = null;
-    if (!captions.isEmpty()) {
-      try {
-        captionsScore = calculateSentimentScore(captions);
-      } catch (ApiException e) {
-        System.err.println(e.getMessage());
-        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, NLP_API_ERROR);
-        return;
-      }
-    }
+    executor.shutdown();
 
     String json = "";
-    if (commentsScore != null && captionsScore != null) {
+    if (!commentsList.isEmpty() && !captions.isEmpty()) {
       json = createResponseJson((commentsScore + captionsScore) / 2f, true);
-    } else if (commentsScore == null && captionsScore != null) {
+    } else if (commentsList.isEmpty() && !captions.isEmpty()) {
       json = createResponseJson(captionsScore, true);
     } else {
       json = createResponseJson(commentsScore, true);
@@ -114,7 +131,7 @@ public class SentimentServlet extends HttpServlet {
   }
 
   /**
-   * Creates a Json object of a VideoAnalysis object.
+   * Creates a Json String of a VideoAnalysis object.
    */ 
   private String createResponseJson(Float score, boolean available) {
     VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
