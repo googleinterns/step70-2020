@@ -1,45 +1,43 @@
-class MockVideoResponse {
-  constructor() {
-    this.result = 'result';
-  }
-}
+import popular from '../popular.js';
 
-QUnit.test('list-video-service - getPopularRequest', function(assert) {
-  const regionCode = 'US';
-  const result = getPopularRequest(regionCode);
-  assert.equal(result.regionCode, regionCode, 'Expecting value US');
+const FAKE_ERROR = new Error('error message');
+
+const mockGetTrendingResponse = {
+  items: ['Example Title']
+};
+
+QUnit.module("list videos", {
+  beforeEach: function() {
+    document.getElementById('popular-list-container').innerText = ''; // reset container before running test
+    loadApi = sinon.fake.returns(
+      Promise.resolve()
+    );
+  },
+  afterEach: function() {
+    sinon.restore();
+  },
 });
 
-QUnit.test('list-video-service - API error', function(assert) {
+QUnit.test('loadPopular - normal use', function(assert) {
   const done = assert.async();
-  loadApi(function() {
-    sinon.stub(gapi.client.youtube.videos, 'list');
-    gapi.client.youtube.videos.list.returns(
-      new Promise((resolve, reject) => {
-        throw new Error('error message');
-      })
-    );
-    getTrendingFromYoutubeApi().catch((err) => {
-      assert.equal(err, YOUTUBE_API_ERROR, 'generic error is converted to specific error message');
-      gapi.client.youtube.videos.list.restore();
-      done();
-    });
+  const getTrendingFromYoutubeApi = sinon.fake.returns(
+    Promise.resolve(mockGetTrendingResponse)
+  );
+  sinon.replace(popular, 'getTrendingFromYoutubeApi', getTrendingFromYoutubeApi);
+  popular.loadPopular().then(() => {
+    assert.dom('#popular-list-container').hasText(mockGetTrendingResponse.items[0]);
+    done();
   });
 });
 
-QUnit.test('list-video-service - normal use', function(assert) {
+QUnit.test('loadPopular - API error', function(assert) {
   const done = assert.async();
-  loadApi(function() {
-    sinon.stub(gapi.client.youtube.videos, 'list');
-    gapi.client.youtube.videos.list.returns(
-      new Promise((resolve, reject) => {
-        resolve(new MockVideoResponse());
-      })
-    );
-    getTrendingFromYoutubeApi().then((response) => {
-      assert.equal(response, 'result', 'expecting object.result = result');
-      gapi.client.youtube.videos.list.restore();
-      done();
-    });
+  const getTrendingFromYoutubeApi = sinon.fake.returns(
+    Promise.reject(FAKE_ERROR)
+  );
+  sinon.replace(popular, 'getTrendingFromYoutubeApi', getTrendingFromYoutubeApi);
+  popular.loadPopular().then(() => {
+    assert.dom('#popular-list-container').hasText('An error occured with YouTube');
+    done();
   });
 });
