@@ -3,8 +3,7 @@
  * @returns {String} sentiment analysis message
  */
 async function getSentimentAnaylsisMsg(linkUrl) {
-  // TODO use regular expression 
-  const videoId = linkUrl.split('v=')[1];
+  const videoId = getVideoId(linkUrl);
   return fetch(`https://step70-2020.appspot.com/sentiment?video-id=${videoId}`)
     .then(response => {
       if (response.ok) {
@@ -23,6 +22,16 @@ async function getSentimentAnaylsisMsg(linkUrl) {
     .catch(error => {
       return error.message;
     });
+}
+
+/**
+ * @param {String} linkUrl
+ * @returns {String} video id 
+ * Based on src/main/webapp/scripts/script.js
+ */
+function getVideoId(linkUrl) {
+  const regex = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+  return linkUrl.match(regex)[1];
 }
 
 /**  
