@@ -63,7 +63,7 @@ async function getToxicityAnalysisMsg(text) {
   return fetch(request)
     .then(response => response.json())
     .then((responseJson) => {
-      return toxicityToPercentString(responseJson.attributeScores.TOXICITY.summaryScore.value) + ' toxic';
+      return toxicityToPercentString(responseJson.attributeScores.TOXICITY.summaryScore.value);
     })
     .catch((err) => {
       console.error('An error occurred with the Perspective API', err);
@@ -81,7 +81,7 @@ function makePerspectiveRequestString(text) {
 }
 
 function toxicityToPercentString(toxicity) {
-  return (toxicity * 100).toFixed(2).toString() + '%';
+  return (toxicity * 100).toFixed(1).toString() + '% chance of being toxic';
 }
 
 export { getSentimentAnalysisMsg, getToxicityAnalysisMsg };
