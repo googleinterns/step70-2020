@@ -9,7 +9,8 @@
     "tabs",
     "contextMenus",
     "notifications",
-    "https://step70-2020.appspot.com/"
+    "https://step70-2020.appspot.com/",
+    "https://commentanalyzer.googleapis.com/"
   ],
   "background": {
     "page": "background.html",
