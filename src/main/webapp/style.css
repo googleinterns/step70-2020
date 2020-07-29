@@ -51,8 +51,8 @@
   cursor: pointer;
 }
 
-.row {
-  padding: 0%;
+.fill {
+  min-height: 100vh;
 }
 
 .sentiment-score {
