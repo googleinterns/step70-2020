@@ -1,6 +1,6 @@
 const API_KEY = '';
 
-const TITLE_TEXT = 'Capstone Project' //TODO: change to actual name
+const TITLE_TEXT = 'Youtube Vibe Check';
 const MENU_ITEMS = [
   {name: 'Trending', link: 'popular.html', icon: 'whatshot'},
   {name: 'Positive', link: 'positive.html', icon: 'grade'},
@@ -19,10 +19,15 @@ function getDomValue(domId) {
 function createHeader() {
   const headerDom = document.getElementsByTagName('header')[0];
   const title = document.createElement('h3');
+  const logo = document.createElement('img');
   const link = document.createElement('a');
   title.innerText = TITLE_TEXT;
+  title.className = 'd-inline-block align-top';
+  logo.src = 'logo.png';
+  logo.id = 'logo';
   link.className = 'navbar-brand';
   link.href = 'index.html';
+  link.appendChild(logo);
   link.appendChild(title);
   headerDom.appendChild(link);
 }
