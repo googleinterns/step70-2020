@@ -8,7 +8,8 @@ const mockGetTrendingResponse = {
 
 QUnit.module("list videos", {
   beforeEach: function() {
-    document.getElementById('popular-list-container').innerText = ''; // reset container before running test
+    // reset container before running test
+    document.getElementById('popular-list-container').innerText = '';
     loadApi = sinon.fake.returns(
       Promise.resolve()
     );

@@ -12,12 +12,7 @@ function loadApi() {
         'apiKey': API_KEY,
         'discoveryDocs': [YOUTUBE_DISCOVERY]
       })
-      .then(resolve)
-      .catch((error) => {
-        alert('Oops! An error occured with Youtube, please try again later.');
-        throw error;
-        reject();
-      });
+      .then(resolve);
     });
   });
 }

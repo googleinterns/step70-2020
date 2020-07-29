@@ -2,7 +2,7 @@ import { getTrendingFromYoutubeApi } from './list-video-service.js';
 
 function loadPopular() {
   return loadApi().then(() => popular.getTrendingFromYoutubeApi()).then((response) => {
-    for(let item of response.items) {
+    for(const item of response.items) {
       // Ready in a later PR: display the item nicely on the page
       const containerDOM = document.getElementById('popular-list-container');
       containerDOM.innerText += item;
