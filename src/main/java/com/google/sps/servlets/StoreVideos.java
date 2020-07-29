@@ -19,14 +19,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class StoreVideos extends HttpServlet {
+public class StoreVideos {
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-  public Entity incrementSearchCount(String id, float sentiment) throws EntityNotFoundException, ConcurrentModificationException {
+  public Entity incrementSearchCount(String id, float sentiment)
+      throws EntityNotFoundException, ConcurrentModificationException {
     Key videoKey = KeyFactory.createKey("Video", id);
     Entity videoEntity = datastore.get(videoKey);
-    float numSearches = (float) videoEntity.getProperty("numSearches");
+    Long numSearches = (long) videoEntity.getProperty("numSearches");
     videoEntity.setProperty("numSearches", numSearches + 1);
     return videoEntity;
   }
@@ -34,28 +35,27 @@ public class StoreVideos extends HttpServlet {
   public Entity createVideoEntity(String id) {
     Entity videoEntity = new Entity("Video", id);
     videoEntity.setProperty("sentiment", 0);
-    videoEntity.setProperty("numSearches", 0);
+    videoEntity.setProperty("numSearches", 1);
     return videoEntity;
   }
-
-  @Override
+  
   public void addToDatabase(String id, float sentiment) {
     Transaction transaction = datastore.beginTransaction();
-    for(int numRetries = 3; numRetries > 0; numRetries--) {
+    for (int numRetries = 3; numRetries > 0; numRetries--) {
       try {
-        datastore.put(transaction, incrementSearchCount(id));
+        datastore.put(transaction, incrementSearchCount(id, sentiment));
         transaction.commit();
         break;
       } catch (EntityNotFoundException e) {
-        datastore.put(transaction, createVideoEntity(id, sentiment));
+        datastore.put(transaction, createVideoEntity(id));
         transaction.commit();
         break;
       } catch (ConcurrentModificationException e) {
-        if(numRetries == 0) {
-          response.sendError(HttpServletResponse.SC_CONFLICT, "Too many concurrent searches.");
+        if(numRetries == 1) {
+          throw e;
         }
       } finally {
-        if(transaction.isActive()) {
+        if (transaction.isActive()) {
           transaction.rollback();
         }
       }
