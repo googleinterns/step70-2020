@@ -1,4 +1,5 @@
 const API_KEY = '';
+const YOUTUBE_DISCOVERY = 'https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest';
 
 const TITLE_TEXT = 'Youtube Vibe Check';
 const MENU_ITEMS = [
@@ -6,6 +7,22 @@ const MENU_ITEMS = [
   {name: 'Positive', link: 'positive.html', icon: 'grade'},
   {name: 'Check', link: 'index.html', icon: 'check_circle'}
 ];
+
+/**
+ * Loads any Google APIs listed in the discoveryDocs
+ * @return {Promise} for completing the load
+ */
+function loadApi() {
+  return new Promise((resolve, reject) => {
+    gapi.load('client', () => {
+      gapi.client.init({
+        'apiKey': API_KEY,
+        'discoveryDocs': [YOUTUBE_DISCOVERY]
+      })
+      .then(resolve);
+    });
+  });
+}
 
 function updateDom(text, containerId) {
   const containerDOM = document.getElementById(containerId);
@@ -20,6 +37,14 @@ function getVideoId() {
   const regex = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
   const url = document.getElementById('video-url').value;
   return url.match(regex)[1];
+}
+
+function addOptionToSelectList(value, text, selectId) {
+  const selectionDOM = document.getElementById(selectId);
+  const option = document.createElement('option');
+  option.value = value;
+  option.innerText = text;
+  selectionDOM.appendChild(option);
 }
 
 function createHeader() {

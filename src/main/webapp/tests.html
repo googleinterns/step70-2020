@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
@@ -11,18 +10,24 @@
 <body>
   <div id="qunit"></div>
   <div id="qunit-fixture">
+    <select id="region-select"></select>
     <header></header>
     <div id="menu"></div>
     <textarea id="video-url" value="https://www.youtube.com/watch?v=gjKpAAezWQA"></textarea>
+    <div id='popular-list-container'></div>
   </div>
   <script src="https://code.jquery.com/qunit/qunit-2.10.0.js"></script>
   <script src="https://unpkg.com/qunit-dom/dist/qunit-dom.js"></script>
   <script src="https://sinonjs.org/releases/sinon-9.0.0.js"></script>
+  <script src="https://apis.google.com/js/api.js"></script>
   <script src="scripts/script.js"></script>
   <script src="scripts/perspective.js"></script>
   <script src="scripts/perspective-api-service.js"></script>
+  <script type="module" src="scripts/popular.js"></script>
   <script src="scripts/classes/comment-class.js"></script>
   <script src="scripts/tests/perspective-test.js"></script>
+  <script type="module" src="scripts/tests/popular-test.js"></script>
+  <script type="module" src="scripts/tests/comment-post-test.js"></script>
   <script src="scripts/tests/view-test.js"></script>
   <script defer type="module" src="scripts/tests/comment-post-test.js"></script>
   <script defer type="module" src="scripts/tests/controller-auth-test.js"></script>
@@ -36,5 +41,4 @@
     <div id="result-text"></div>
   </div>
 </body>
-
 </html>
