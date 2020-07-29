@@ -24,7 +24,7 @@ QUnit.test('When signed in, there should be sign-out and comment buttons', async
 
   await controller.initClient();
 
-  assert.dom('#authorize-button').hasProperty('innerText', 'Sign out');
+  assert.dom('#authorize-button').hasProperty('innerText', 'LOG OUT');
   assert.dom('#comment-button').exists();
 });
 
@@ -34,7 +34,7 @@ QUnit.test('When signed out, there should be an authorization button', async fun
 
   await controller.initClient();
 
-  assert.dom('#authorize-button').hasProperty('innerText', 'Authorize');
+  assert.dom('#authorize-button').hasProperty('innerText', 'LOG IN');
   assert.dom('#comment-button').doesNotExist();
 });
 
