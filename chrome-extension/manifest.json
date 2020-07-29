@@ -8,7 +8,8 @@
     "declarativeContent",
     "tabs",
     "contextMenus",
-    "notifications"
+    "notifications",
+    "https://step70-2020.appspot.com/"
   ],
   "background": {
     "page": "background.html",

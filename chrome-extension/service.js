@@ -5,9 +5,7 @@
 async function getSentimentAnaylsisMsg(linkUrl) {
   // TODO use regular expression 
   const videoId = linkUrl.split('v=')[1];
-  // TODO enable CORS in backend
-  const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-  return fetch(proxyUrl + `https://step70-2020.appspot.com/sentiment?video-id=${videoId}`)
+  return fetch(`https://step70-2020.appspot.com/sentiment?video-id=${videoId}`)
     .then(response => {
       if (response.ok) {
         return response.json();
