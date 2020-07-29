@@ -1,9 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Teko:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+
+.alert {
+  max-width: 14em;
+}
+
+.btn {
+  font-weight: 500;
+  margin: 0.5em 0em;
+  width: 10em;
+}
 
 .card {
   background-color: rgba(0, 0, 0, 0);
   border: none;
   width: 18rem;
+}
+
+.form-group {
+  background-color: white;
+  padding: 2rem;
+  border-style: inset;
+  border-radius: 0.25em;
+  border-color: rgba(0, 0, 0, 0.12);
+  border-width: medium;
 }
 
 .material-icons.md-dark {
@@ -14,9 +34,15 @@
   background-color: rgba(0, 0, 0, 0.01);
 }
 
+.navbar-brand {
+  color: black;
+}
+.navbar-brand:hover {
+  color: black;
+}
+
 .nav-item {
   font-size: 0.8em;
-  margin: auto;
   text-align:center;
   width: 100%;
 }
@@ -25,23 +51,52 @@
   cursor: pointer;
 }
 
+.row {
+  padding: 0%;
+}
+
+.sentiment-score {
+  font-size: 8em;
+  font-weight: 500;
+  color: black;
+  line-height: 8rem;
+}
+
 #content {
   background-color: rgba(0, 0, 0, 0.03);
+  margin: 0%;
+  padding: 2.5em 2em;
+  flex-grow: 100;
+}
+
+#logo {
+  width: 2em;
+  padding-right: 0.5em;
 }
 
 #menu {
-  width: 5rem;
+  width: 5em;
 }
 
 a {
-  color: black;
+  color: rgba(0, 0, 0, 0.54);
 }
 a:hover {
-  color: black;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.54);
 }
 
 header {
   padding: 0.75em 5em;
   font-family: 'Teko', sans-serif;
   height: 4em;
+}
+
+h4, h5 {
+  color: black;
 }
