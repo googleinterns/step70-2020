@@ -12,17 +12,12 @@ function loadApi() {
         'apiKey': API_KEY,
         'discoveryDocs': [YOUTUBE_DISCOVERY]
       })
-      .then(resolve)
-      .catch((err) => {
-        alert('Oops! An error occured with Youtube, please try again later.');
-        console.error('Was not able to load Google API client:', err);
-        reject();
-      });
+      .then(resolve);
     });
   });
 }
 
-const TITLE_TEXT = 'Capstone Project' //TODO: change to actual name
+const TITLE_TEXT = 'Capstone Project';
 const MENU_ITEMS = [
   {name: 'Trending', link: 'popular.html', icon: 'whatshot'},
   {name: 'Positive', link: 'positive.html', icon: 'grade'},
