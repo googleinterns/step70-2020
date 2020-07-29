@@ -1,9 +1,6 @@
 /** Button that triggers authorization/sign out flow */
 const authorizeButton = document.getElementById('authorize-button');
 
-/** Video Url textbox that the comment will be posted to */
-const videoUrlElement = document.getElementById('video-url');
-
 /** Textbox that allows user to input comments */
 const postCommentElement = document.getElementById('comment-text');
 
@@ -84,4 +81,4 @@ function failedApiCallback(err) {
     updateDom('An error occurred for posting this comment.', postResultContainer);
 }
 
-export { videoUrlElement, postCommentElement, failedInitCallback, successfulApiCallback, failedApiCallback, updateSigninStatus };
+export { postCommentElement, failedInitCallback, successfulApiCallback, failedApiCallback, updateSigninStatus };

@@ -16,6 +16,12 @@ function getDomValue(domId) {
   return document.getElementById(domId).value;
 }
 
+function getVideoId() {
+  const regex = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+  const url = document.getElementById('video-url').value;
+  return url.match(regex)[1];
+}
+
 function createHeader() {
   const headerDom = document.getElementsByTagName('header')[0];
   const title = document.createElement('h3');

@@ -1,5 +1,5 @@
 async function analyzeVideo() {
-  const videoId = document.getElementById('video-url').value.split('v=')[1];
+  const videoId = getVideoId();
   displayLoading('sentiment-container');
   return fetch(`/sentiment?video-id=${videoId}`)
   .then(response => {
