@@ -5,7 +5,7 @@
  */
 const API_KEY = '';
 
-async function getSentimentAnaylsisMsg(linkUrl) {
+async function getSentimentAnalysisMsg(linkUrl) {
   const videoId = getVideoId(linkUrl);
   return fetch(`https://step70-2020.appspot.com/sentiment?video-id=${videoId}`)
     .then(response => {
@@ -52,7 +52,7 @@ function sentimentScoreToNumerator(score) {
  * Modified based on src/main/webapp/scripts/perspective.js
  * and src/main/webapp/scripts/perspective-api-service.js
  */
-async function getToxicityAnaylsisMsg(text) {
+async function getToxicityAnalysisMsg(text) {
   const request = new Request(
     `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${API_KEY}`,
     {
@@ -84,4 +84,4 @@ function toxicityToPercentString(toxicity) {
   return (toxicity * 100).toFixed(2).toString() + '%';
 }
 
-export { getSentimentAnaylsisMsg, getToxicityAnaylsisMsg };
+export { getSentimentAnalysisMsg, getToxicityAnalysisMsg };
