@@ -1,11 +1,11 @@
 import { postVideoComment } from '/scripts/post-comment.js';
+import 'https://apis.google.com/js/api.js';
 
 const VIDEO_ID = 'sample video id';
 const COMMENT_TEXT = 'sample comment';
 
 QUnit.module('Post a comment via YouTube API', {
     beforeEach: () => {
-        gapi = new CustomGapi();
         sinon.stub(gapi.client, 'request');
     },
     afterEach: () => { gapi.client.request.restore(); },
@@ -64,17 +64,6 @@ class CustomError extends Error {
         super();
         this.result = { 'error': { 'message': msg, } };
     }
-}
-
-class CustomGapi {
-    constructor() {
-        this.client = new CustomClient();
-    }
-}
-
-class CustomClient {
-    constructor() { }
-    request() { }
 }
 
 function createExpectedRequestBody(videoId, commentText) {

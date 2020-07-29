@@ -35,12 +35,16 @@ function updateSigninStatus(isSignedIn, handleAuthClick, handleSignoutClick, han
         authorizeButton.value = 'LOG OUT'
         authorizeButton.onclick = handleSignoutClick;
         const commentButton = document.createElement('input');
-        document.getElementById('comment-button-container').appendChild(commentButton);
         commentButton.type = 'button';
         commentButton.id = 'comment-button';
         commentButton.value = 'POST';
         commentButton.className = 'btn btn-primary';
         commentButton.onclick = handleCommentClick;
+        const commentButtonContainer = document.getElementById('comment-button-container');
+        while (commentButtonContainer.firstChild) {
+            commentButtonContainer.removeChild(commentButtonContainer.firstChild);
+        }
+        commentButtonContainer.appendChild(commentButton);
     } else {
         updateDom('LOG IN', authorizeButton);
         authorizeButton.value = 'LOG IN';
