@@ -1,3 +1,5 @@
+import { getToxicityAnaylsisMsg, getSentimentAnaylsisMsg } from './service.js';
+
 const MS_BEFORE_CLEAR_NOTIFICAITON = 2000;
 const VIBE_CHECK_MENU_ID = 'vibeCheck';
 const TOXICITY_CHECK_MENU_ID = 'toxicityCheck';
@@ -74,16 +76,4 @@ async function handleToxicityCheck(info) {
   chrome.notifications.create(notificationOption, function (id) {
     setTimeout(function () { chrome.notifications.clear(id); }, MS_BEFORE_CLEAR_NOTIFICAITON);
   });
-}
-
-/**  @param {String} linkUrl, unchecked */
-async function getSentimentAnaylsisMsg(linkUrl) {
-  // TODO calls backend
-  return 'Sentiment score is 42';
-}
-
-/**  @param {String} text, unchecked */
-async function getToxicityAnaylsisMsg(text) {
-  // TODO calls backend
-  return 'Toxicity score is 24';
 }
