@@ -14,7 +14,7 @@ async function getSentimentAnaylsisMsg(linkUrl) {
     })
     .then(videoAnalysis => {
       if (videoAnalysis.scoreAvailable) {
-        return videoAnalysis.score.toString() + ' out of ±1';
+        return sentimentScoreToNumerator(videoAnalysis.score) + ' out of 10';
       } else {
         return 'Video has no available captions or comments to analyze.';
       }
@@ -32,6 +32,15 @@ async function getSentimentAnaylsisMsg(linkUrl) {
 function getVideoId(linkUrl) {
   const regex = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
   return linkUrl.match(regex)[1];
+}
+
+/**
+ * @param {float} score
+ * @returns {float} convert score from -1 to 1 to fraction out of 10
+ * Based on src/main/webapp/scripts/script.js
+ */
+function sentimentScoreToNumerator(score) {
+  return (score / 2 * 10 + 5).toFixed(1);
 }
 
 /**  
