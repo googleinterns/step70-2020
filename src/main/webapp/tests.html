@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>QUnit Tests</title>
   <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.10.0.css">
 </head>
+
 <body>
   <div id="qunit"></div>
   <div id="qunit-fixture">
     <select id="region-select"></select>
+    <header></header>
+    <div id="menu"></div>
+    <textarea id="video-url" value="https://www.youtube.com/watch?v=gjKpAAezWQA"></textarea>
   </div>
   <script src="https://code.jquery.com/qunit/qunit-2.10.0.js"></script>
   <script src="https://unpkg.com/qunit-dom/dist/qunit-dom.js"></script>
@@ -22,5 +27,18 @@
   <script src="scripts/tests/perspective-test.js"></script>
   <script type="module" src="scripts/tests/popular-test.js"></script>
   <script type="module" src="scripts/tests/comment-post-test.js"></script>
+  <script src="scripts/tests/view-test.js"></script>
+  <script defer type="module" src="scripts/tests/comment-post-test.js"></script>
+  <script defer type="module" src="scripts/tests/controller-auth-test.js"></script>
+
+  <!-- Async tests seem to have some conflicts with qunit-fixture.
+  Qunit may have restored the page before assertion happened. -->
+  <div id="content">
+    <textarea name="comment" id="comment-text"></textarea>
+    <button id="authorize-button">Authorize</button>
+    <div id="comment-button-container"></div>
+    <div id="result-text"></div>
+  </div>
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 package com.google.sps.servlets;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.gax.rpc.ApiException;
 import com.google.cloud.language.v1.Document;
 import com.google.cloud.language.v1.LanguageServiceClient;
@@ -9,8 +10,10 @@ import com.google.gson.JsonSyntaxException;
 import com.google.sps.data.VideoAnalysis;
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import java.security.GeneralSecurityException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,48 +22,68 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/sentiment")
 public class SentimentServlet extends HttpServlet {
 
+  private CommentService commentService;
+  private Caption captionService;
   private LanguageServiceClient languageService;
   private Sentiment sentiment;
-  private final String INVALID_INPUT_ERROR = "Request to /sentiment must be an array of Strings.";
-  private final String CONVERT_STRING_ERROR = "Converting request to String failed.";
-  private final String EMPTY_STRING_ERROR = "No comments to analyze. Request must be a non-empty array.";
+  private final String INVALID_INPUT_ERROR = "Video is private or does not exist.";
+  private final String COMMENTS_FAILED_ERROR = "Comments could not be retrieved.";
   private final String NLP_API_ERROR = "Language service client failed.";
+  private final String NO_DATA_ERROR = "No comments or captions available to analyze.";
+  private final String READER_ERROR = "Reading video ID failed.";
 
-  public SentimentServlet() throws IOException {
+  public SentimentServlet() throws IOException, GeneralSecurityException {
     languageService = LanguageServiceClient.create();
+    captionService = new Caption();
+    commentService = new CommentService();
   }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String comments = "";
-    Float commentsScore = null;
-
+    String videoId = request.getParameter("video-id");
+    
+    List<String> commentsList = new ArrayList<>();
     try {
-      comments = requestToString(request);
-    } catch (JsonSyntaxException e) {
+      commentsList = commentService.getCommentsFromId(videoId);
+    } catch (IllegalArgumentException e) { // video not found
       System.err.println(e.getMessage());
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, INVALID_INPUT_ERROR);
       return;
-    } catch (IOException e) {
-      System.err.println(e.getMessage());
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, CONVERT_STRING_ERROR);
+    } catch (GoogleJsonResponseException e) { // some other problem with requesting comment data
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, COMMENTS_FAILED_ERROR);
+    }
+    String comments = String.join(". ", commentsList);
+
+    String captions = captionService.getCaptionFromId(videoId);
+
+    if (comments.isEmpty() && captions.isEmpty()) {
+      VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+          .setScore(null)
+          .setScoreAvailable(false)
+          .build();
+      String json = new Gson().toJson(videoAnalysis);
+
+      response.setContentType("application/json;");
+      response.getWriter().println(json);
       return;
     }
 
-    if (comments.isEmpty()) {
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST, EMPTY_STRING_ERROR);
-      return;
-    }
+    String text = comments + ". " + captions;
+
+    Float score = null;
 
     try {
-      commentsScore = calculateSentimentScore(comments);
+      score = calculateSentimentScore(text);
     } catch (ApiException e) {
       System.err.println(e.getMessage());
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, NLP_API_ERROR);
       return;
     }
 
-    VideoAnalysis videoAnalysis = new VideoAnalysis(commentsScore);
+    VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+        .setScore(score)
+        .setScoreAvailable(true)
+        .build();
     String json = new Gson().toJson(videoAnalysis);
 
     response.setContentType("application/json;");
@@ -68,29 +91,15 @@ public class SentimentServlet extends HttpServlet {
   }
 
   /**
-   * Converts Json String of a request (that is in the form of an array) to a String, separated by
-   * periods. If the Json cannot be converted to an array or is an empty array, null is returned. 
-   * Ex. "["a","b","c"]" --> "a. b. c"
-   */
-  private String requestToString(HttpServletRequest request) throws IOException {
-    Gson gson = new Gson();
-    
-    String textStr = request.getReader().lines().collect(Collectors.joining());
-    List<String> textList = Arrays.asList(gson.fromJson(textStr, String[].class));
-    return String.join(". ", textList);
-  }
-
-  /**
    * Calculates sentiment score of text. The score is from -1 (negative) to +1 (positive).
    */ 
-  private Float calculateSentimentScore(String text) {
+  private Float calculateSentimentScore(String text) throws ApiException {
     Document doc = Document.newBuilder()
         .setContent(text)
         .setTypeValue(Document.Type.PLAIN_TEXT_VALUE)
         .build();
     sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
     Float score = new Float(sentiment.getScore());
-    languageService.close();
 
     return score;
   }
