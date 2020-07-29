@@ -1,6 +1,7 @@
 /**
  * @param {String} linkUrl, to be analyzed
  * @returns {String} sentiment analysis message
+ * Modified based on src/main/webapp/scripts/analyze.js
  */
 const API_KEY = '';
 
