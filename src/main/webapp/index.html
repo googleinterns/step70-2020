@@ -1,38 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Capstone Project</title>
+  <title>YouTube Vibe Check</title>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div id="content">
-  
-    <form>
-      <label for="video-url">Video URL:</label>
-      <textarea name="video-url" id="video-url"></textarea>
-      <br/><br/>
+<body onload="createMenu(); createHeader()">
+  <header></header>
+  <div class="row no-gutters">
+    <ul id="menu" class="nav flex-column"></ul>
+    <div id="content">
+      <form>
+        <label for="video-url">Video URL:</label>
+        <textarea name="video-url" id="video-url"></textarea>
+        <br/><br/>
 
-      <input type="button" value="Analyze" onclick="getCaptions()"/>
-    </form>
+        <input type="button" value="Analyze" onclick="analyzeVideo()"/>
+      </form>
+      <p id="sentiment-container"></p>
 
-    <p id="sentiment-container"></p>
-  
-    <form>
-      <label for="comment">Comment:</label>
-      <textarea name="comment" id="comment-text"></textarea>
-      <br/><br/>
+      <form>
+        <label for="comment">Comment:</label>
+        <textarea name="comment" id="comment-text"></textarea>
+        <br/><br/>
 
-      <input type="button" value="Is this Toxic?" onclick="getToxicity()"/>
-    </form>
+        <input type="button" value="Is this Toxic?" onclick="getToxicity()"/>
+      </form>
+      <p id="toxicity-container"></p>
 
-    <p id="toxicity-container"></p>
-
+      <div>
+        <p>Post a comment to Youtube:</p>
+        <button id="authorize-button">Authorize</button>
+        <div id="comment-button-container"></div>
+        <div id="result-text"></div>
+      </div>
+    </div>
   </div>
-  
+
+  <script src="https://apis.google.com/js/api.js"></script>
   <script src="scripts/script.js"></script>
-  <script src="scripts/captions.js"></script>
+  <script src="scripts/analyze.js"></script>
   <script src="scripts/perspective.js"></script>
-  </script>
+  <script src="scripts/perspective-api-service.js"></script>
+  <script src="scripts/classes/comment-class.js"></script>
+  <script defer type="module" src="scripts/controller-auth.js"></script>
+
 </body>
 </html>

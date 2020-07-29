@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@400&display=swap');
+
+.card {
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  width: 18rem;
+}
+
+.material-icons.md-dark {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.nav {
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+.nav-item {
+  font-size: 0.8em;
+  margin: auto;
+  text-align:center;
+  width: 100%;
+}
+.nav-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+#content {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+#menu {
+  width: 5rem;
+}
+
+a {
+  color: black;
+}
+a:hover {
+  color: black;
+}
+
+header {
+  padding: 0.75em 5em;
+  font-family: 'Teko', sans-serif;
+  height: 4em;
+}
