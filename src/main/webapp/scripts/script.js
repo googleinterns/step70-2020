@@ -52,3 +52,35 @@ function createMenu() {
     menuDom.appendChild(listItem);
   }
 }
+
+function displaySentiment(videoAnalysis) {
+  const displayDom = document.getElementById('sentiment-display');
+  const sentimentDom = document.getElementById('sentiment-container');
+  if (videoAnalysis.scoreAvailable) {
+    const numerator = sentimentScoreToNumerator(videoAnalysis.score);
+    sentimentDom.innerText = numerator.toString();
+    sentimentDom.className = 'sentiment-score';
+    if(numerator >= 7) {
+      displayDom.className = 'alert alert-success';
+    } else if (numerator <= 3) {
+      displayDom.className = 'alert alert-danger';
+    } else {
+      displayDom.className = 'alert alert-warning';
+    }
+  } else {
+    sentimentDom.className = '';
+    displayDom.className = 'alert alert-primary';
+    updateDom('An error occurred when analyzing this video', 'sentiment-container');
+  }
+}
+
+// convert score from -1 to 1 to fraction out of 10
+function sentimentScoreToNumerator(score) {
+  return (score/2*10+5).toFixed(1);
+}
+
+function displayLoading(containerId) {
+  const containerDom = document.getElementById(containerId);
+  containerDom.innerText = '';
+  containerDom.className = 'spinner-border text-primary';
+}
