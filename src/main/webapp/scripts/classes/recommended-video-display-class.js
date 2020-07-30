@@ -11,7 +11,6 @@ class RecommendedVideoDisplay{
   }
 
   addVideo(video) {
-    console.log(video);
     const videoCard = this.createVideoCard(video);
     const newElement = document.createElement('div');
     newElement.className = "col-lg-3 col-md-4 col-sm-6 col-xs-12";

@@ -9,7 +9,7 @@ function getTrendingFromYoutubeApi() {
 function getPopularRequest(regionCode) {
   return {
     'part': [
-      'snippet,contentDetails,statistics'
+      'snippet,statistics'
     ],
     'chart': 'mostPopular',
     'maxResults': 12,
