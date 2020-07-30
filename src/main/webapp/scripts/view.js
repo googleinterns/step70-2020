@@ -1,9 +1,6 @@
 /** Button that triggers authorization/sign out flow */
 const authorizeButton = document.getElementById('authorize-button');
 
-/** Video Url textbox that the comment will be posted to */
-const videoUrlElement = document.getElementById('video-url');
-
 /** Textbox that allows user to input comments */
 const postCommentElement = document.getElementById('comment-text');
 
@@ -32,11 +29,13 @@ function updateDom(text, containerDOM) {
  */
 function updateSigninStatus(isSignedIn, handleAuthClick, handleSignoutClick, handleCommentClick) {
     if (isSignedIn) {
-        updateDom('Sign out', authorizeButton)
+        authorizeButton.value = 'LOG OUT'
         authorizeButton.onclick = handleSignoutClick;
-        const commentButton = document.createElement('button');
+        const commentButton = document.createElement('input');
+        commentButton.type = 'button';
         commentButton.id = 'comment-button';
-        commentButton.innerText = 'Post a comment';
+        commentButton.value = 'POST';
+        commentButton.className = 'btn btn-primary';
         commentButton.onclick = handleCommentClick;
         const commentButtonContainer = document.getElementById('comment-button-container');
         while (commentButtonContainer.firstChild) {
@@ -44,7 +43,8 @@ function updateSigninStatus(isSignedIn, handleAuthClick, handleSignoutClick, han
         }
         commentButtonContainer.appendChild(commentButton);
     } else {
-        updateDom('Authorize', authorizeButton);
+        updateDom('LOG IN', authorizeButton);
+        authorizeButton.value = 'LOG IN';
         authorizeButton.onclick = handleAuthClick;
         const commentButton = document.getElementById('comment-button');
         commentButton && commentButton.remove();
@@ -68,7 +68,7 @@ function failedInitCallback(err) {
  * @param {*} data content is ignored
  */
 function successfulApiCallback(data) {
-    updateDom('Successful', postResultContainer);
+    updateDom('Successfully posted your comment to YouTube', postResultContainer);
 }
 
 /**
@@ -78,7 +78,7 @@ function successfulApiCallback(data) {
  */
 function failedApiCallback(err) {
     console.error('execution error ', err);
-    updateDom(err, postResultContainer);
+    updateDom('An error occurred for posting this comment.', postResultContainer);
 }
 
-export { videoUrlElement, postCommentElement, failedInitCallback, successfulApiCallback, failedApiCallback, updateSigninStatus };
+export { postCommentElement, failedInitCallback, successfulApiCallback, failedApiCallback, updateSigninStatus };
