@@ -27,7 +27,7 @@ public final class StoreVideosTest {
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-  private final float SENTIMENT = 0.5f;
+  private final Float SENTIMENT = 0.5f;
   private final String VIDEO_ID_1 = "test ID 1";
   private final String VIDEO_ID_2 = "test ID 2";
   private final String VIDEO_ID_3 = "test ID 3";
@@ -87,7 +87,7 @@ public final class StoreVideosTest {
     
     // Add entity to database first
     storeVideosSpy.addToDatabase(VIDEO_ID_1, SENTIMENT);
-    doThrow(new ConcurrentModificationException()).when(storeVideosSpy).incrementSearchCount(VIDEO_ID_1, SENTIMENT);
+    doThrow(new ConcurrentModificationException()).when(storeVideosSpy).incrementSearchCount(VIDEO_ID_1);
     // Try to add the entity a second time, throw ConcurrentModificationException instead
     storeVideosSpy.addToDatabase(VIDEO_ID_1, SENTIMENT);
   }

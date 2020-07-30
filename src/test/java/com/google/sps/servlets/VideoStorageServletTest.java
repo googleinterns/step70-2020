@@ -30,8 +30,8 @@ public final class VideoStorageServletTest {
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
   private StringWriter stringWriter;
   private PrintWriter writer;
-  private final float HIGHER_SENTIMENT = 0.5f;
-  private final float LOWER_SENTIMENT = -0.5f;
+  private final Float HIGHER_SENTIMENT = 0.5f;
+  private final Float LOWER_SENTIMENT = -0.5f;
   private final String VIDEO_ID_1 = "test ID 1";
   private final String VIDEO_ID_2 = "test ID 2";
   private final String VIDEO_ID_3 = "test ID 3";
@@ -110,7 +110,7 @@ public final class VideoStorageServletTest {
     Assert.assertEquals(expected, stringWriter.toString());
   }
 
-  private Entity createVideoEntity(String id, float sentiment, int numSearches) {
+  private Entity createVideoEntity(String id, Float sentiment, int numSearches) {
     Entity entity = new Entity("Video", id);
     entity.setProperty("sentiment", sentiment);
     entity.setProperty("numSearches", numSearches);

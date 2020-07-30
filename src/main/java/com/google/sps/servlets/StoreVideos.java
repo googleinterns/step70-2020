@@ -23,7 +23,7 @@ public class StoreVideos {
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-  public Entity incrementSearchCount(String id, float sentiment)
+  public Entity incrementSearchCount(String id)
       throws EntityNotFoundException, ConcurrentModificationException {
     Key videoKey = KeyFactory.createKey("Video", id);
     Entity videoEntity = datastore.get(videoKey);
@@ -32,22 +32,22 @@ public class StoreVideos {
     return videoEntity;
   }
 
-  public Entity createVideoEntity(String id) {
+  public Entity createVideoEntity(String id, Float sentiment) {
     Entity videoEntity = new Entity("Video", id);
-    videoEntity.setProperty("sentiment", 0);
+    videoEntity.setProperty("sentiment", sentiment);
     videoEntity.setProperty("numSearches", 1);
     return videoEntity;
   }
   
-  public void addToDatabase(String id, float sentiment) {
+  public void addToDatabase(String id, Float sentiment) {
     Transaction transaction = datastore.beginTransaction();
     for (int numRetries = 3; numRetries > 0; numRetries--) {
       try {
-        datastore.put(transaction, incrementSearchCount(id, sentiment));
+        datastore.put(transaction, incrementSearchCount(id));
         transaction.commit();
         break;
       } catch (EntityNotFoundException e) {
-        datastore.put(transaction, createVideoEntity(id));
+        datastore.put(transaction, createVideoEntity(id, sentiment));
         transaction.commit();
         break;
       } catch (ConcurrentModificationException e) {
