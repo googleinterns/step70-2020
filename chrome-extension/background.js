@@ -1,4 +1,4 @@
-import { getToxicityAnaylsisMsg, getSentimentAnaylsisMsg } from './service.js';
+import { getSentimentAnalysisMsg, getToxicityAnalysisMsg } from './service.js';
 
 const MS_BEFORE_CLEAR_NOTIFICAITON = 2000;
 const VIBE_CHECK_MENU_ID = 'vibeCheck';
@@ -51,7 +51,7 @@ async function handleVibeCheck(info) {
   const notificationOption = {
     type: 'basic',
     iconUrl: ICON_PATH,
-    title: await getSentimentAnaylsisMsg(info.linkUrl),
+    title: await getSentimentAnalysisMsg(info.linkUrl),
     message: `Click to watch ${info.linkUrl}`,
     priority: 0
   };
@@ -68,7 +68,7 @@ async function handleToxicityCheck(info) {
   const notificationOption = {
     type: 'basic',
     iconUrl: ICON_PATH,
-    title: await getToxicityAnaylsisMsg(info.selectionText),
+    title: await getToxicityAnalysisMsg(info.selectionText),
     message: `"${info.selectionText}"`,
     priority: 0
   };
