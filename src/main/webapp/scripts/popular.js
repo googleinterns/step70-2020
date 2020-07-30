@@ -44,6 +44,7 @@ regionSelectorElement.onchange = function(){
   popular.loadPopular();
 }
 
+displayLoading('popular-list-container');
 loadApi().then(() => {
   popular.addRegionOptions();
   popular.loadPopular();

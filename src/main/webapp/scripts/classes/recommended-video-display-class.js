@@ -7,22 +7,16 @@ class RecommendedVideoDisplay{
 
   constructor(containerId) {
     this.dom = document.getElementById(containerId);
-    this.dom.className = 'row';
+    this.dom.className = 'row mt-4';
   }
 
   addVideo(video) {
+    console.log(video);
     const videoCard = this.createVideoCard(video);
     const newElement = document.createElement('div');
     newElement.className = "col-lg-3 col-md-4 col-sm-6 col-xs-12";
     newElement.appendChild(videoCard);
     this.dom.appendChild(newElement);
-  }
-
-  newDiv(className) {
-    const element = document.createElement('div');
-    element.className = className;
-    this.dom.appendChild(element);
-    return element;
   }
 
   createVideoCard(video) {
@@ -33,10 +27,10 @@ class RecommendedVideoDisplay{
     const text = this.newElement(this.#TEXT);
     thumbnail.src = video.thumbnail;
     title.innerText = video.title;
+    title.title =  video.title;
     if(video.sentiment === null) {
       text.innerText = video.likeCount + ' likes';
-    }
-    else {
+    } else {
       text.innerText = video.sentiment;
     }
     cardBody.appendChild(title);
