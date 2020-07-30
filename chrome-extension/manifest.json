@@ -8,10 +8,11 @@
     "declarativeContent",
     "tabs",
     "contextMenus",
-    "notifications"
+    "notifications",
+    "https://step70-2020.appspot.com/"
   ],
   "background": {
-    "scripts": ["background.js"],
+    "page": "background.html",
     "persistent": false
   },
   "options_page": "options.html",
@@ -26,9 +27,9 @@
   },
   "icons": {
     "16": "images/temp-icon.png",
-     "32": "images/temp-icon.png",
-     "48": "images/temp-icon.png",
-     "128": "images/temp-icon.png"
+    "32": "images/temp-icon.png",
+    "48": "images/temp-icon.png",
+    "128": "images/temp-icon.png"
   },
   "manifest_version": 2
 }
