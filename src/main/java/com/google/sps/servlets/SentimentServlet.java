@@ -2,9 +2,6 @@ package com.google.sps.servlets;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.gax.rpc.ApiException;
-import com.google.cloud.language.v1.Document;
-import com.google.cloud.language.v1.LanguageServiceClient;
-import com.google.cloud.language.v1.Sentiment;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.sps.data.VideoAnalysis;
@@ -30,14 +27,13 @@ public class SentimentServlet extends HttpServlet {
 
   private CommentService commentService;
   private Caption captionService;
-  private LanguageServiceClient languageService;
-  private Sentiment sentiment;
-  private final String INVALID_INPUT_ERROR = "Video is private or does not exist.";
-  private final String COMMENTS_FAILED_ERROR = "Comments could not be retrieved.";
-  private final String NLP_API_ERROR = "Language service client failed.";
+  private SentimentAnalysis sentimentAnalysis = new SentimentAnalysis();
+  private static final String INVALID_INPUT_ERROR = "Video is private or does not exist.";
+  private static final String COMMENTS_FAILED_ERROR = "Comments could not be retrieved.";
+  private static final String NLP_API_ERROR = "Language service client failed.";
+  private static final int MAX_THREADS = 26; // 25 thread pools for comments, 1 for captions
 
   public SentimentServlet() throws IOException, GeneralSecurityException {
-    languageService = LanguageServiceClient.create();
     captionService = new Caption();
     commentService = new CommentService();
   }
@@ -45,14 +41,14 @@ public class SentimentServlet extends HttpServlet {
   /**
    * Retrieves the comments and captions of a YouTube video, given its video ID, and calculates the
    * sentiment score for the captions and each individual comment. Then creates a Json String
-   * containing the score value. 
+   * containing the score value.
    * If a video has comments and captions available to analyze, the score returned is the average
    * of both scores. Otherwise, only the score of the available data is returned (not averaged)
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String videoId = request.getParameter("video-id");
-    
+
     List<String> commentsList = new ArrayList<>();
     try {
       commentsList = commentService.getCommentsFromId(videoId);
@@ -67,35 +63,27 @@ public class SentimentServlet extends HttpServlet {
     String captions = captionService.getCaptionFromId(videoId);
 
     if (commentsList.isEmpty() && captions.isEmpty()) {
-      String json = createResponseJson(null, false);
+      VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+        .setScore(null)
+        .setScoreAvailable(false)
+        .build();
+      String json = new Gson().toJson(videoAnalysis);
+
       response.setContentType("application/json;");
       response.getWriter().println(json);
       return;
     }
-    
-    // Creates 26 thread pools (25 for comments, 1 for captions)
-    ExecutorService executor = Executors.newFixedThreadPool(26);
 
-    List<Future> commentScoreFutures = new ArrayList<>();
-    for (String comment : commentsList) {
-      Future<Float> future = executor.submit(new Callable<Float>() {
-        @Override
-        public Float call() {
-          return calculateSentimentScore(comment);
-        }
-      });
-      commentScoreFutures.add(future);
-    }
+    ExecutorService executor = Executors.newFixedThreadPool(MAX_THREADS);
 
-    Future<Float> captionFuture = executor.submit(new Callable<Float>() {
-      @Override
-      public Float call() {
-        return calculateSentimentScore(captions);
-      }
-    });
-    
-    Float commentsScore = 0f;
-    Float captionsScore = 0f;
+    List<Future<Float>> commentScoreFutures = commentsList.stream()
+        .map(comment -> executor.submit(callableFactory(comment)))
+        .collect(Collectors.toList());
+
+    Future<Float> captionFuture = executor.submit(callableFactory(captions));
+
+    float commentsScore = 0f;
+    float captionsScore = 0f;
 
     try {
       for (Future<Float> future : commentScoreFutures) {
@@ -111,40 +99,42 @@ public class SentimentServlet extends HttpServlet {
 
     executor.shutdown();
 
-    String json = "";
-    if (!commentsList.isEmpty() && !captions.isEmpty()) {
-      json = createResponseJson((commentsScore + captionsScore) / 2f, true);
-    } else if (commentsList.isEmpty() && !captions.isEmpty()) {
-      json = createResponseJson(captionsScore, true);
-    } else {
-      json = createResponseJson(commentsScore, true);
-    }
-    
+    String json = determineResponseJson(commentsList, captions, commentsScore, captionsScore);
+
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
 
-  /**
-   * Calculates sentiment score of text. The score is from -1 (negative) to +1 (positive).
-   */ 
-  private Float calculateSentimentScore(String text) throws ApiException {
-    Document doc = Document.newBuilder()
-        .setContent(text)
-        .setTypeValue(Document.Type.PLAIN_TEXT_VALUE)
-        .build();
-    sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
-    Float score = new Float(sentiment.getScore());
-
-    return score;
+  public Callable<Float> callableFactory(String text) {
+    return new Callable<Float>() {
+      @Override
+      public Float call() {
+        return sentimentAnalysis.calculateSentimentScore(text);
+      }
+    };
   }
 
   /**
-   * Creates a Json String of a VideoAnalysis object.
-   */ 
-  private String createResponseJson(Float score, boolean available) {
+   * Determines the correct sentiment score to return to the client depending on the data available
+   * to analyze (comments, captions, or both). Then returns a Json String of VideoAnalysis.
+   */
+  private String determineResponseJson(List<String> commentsList, String captions,
+      float commentsScore, float captionsScore) {
+    float score = 0f;
+    boolean scoreAvailable = true;
+
+    if (!commentsList.isEmpty() && !captions.isEmpty()) {
+      // Average commentsScore and captionsScore
+      score = new Float((commentsScore + captionsScore) / 2f);
+    } else if (commentsList.isEmpty() && !captions.isEmpty()) {
+      score = new Float(captionsScore);
+    } else {
+      score = new Float(commentsScore);
+    }
+
     VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
         .setScore(score)
-        .setScoreAvailable(available)
+        .setScoreAvailable(scoreAvailable)
         .build();
     return new Gson().toJson(videoAnalysis);
   }
