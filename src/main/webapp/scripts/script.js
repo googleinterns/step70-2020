@@ -115,3 +115,11 @@ function displayLoading(containerId) {
   containerDom.innerText = '';
   containerDom.className = 'spinner-border text-primary';
 }
+
+function searchVideo() {
+  queryString = window.location.search;
+  if(queryString) {
+    document.getElementById('video-url').value = 'https://www.youtube.com/watch' + window.location.search;
+    analyzeVideo();
+  }
+}

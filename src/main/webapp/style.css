@@ -20,7 +20,6 @@
 }
 
 .card-title {
-  cursor: pointer;
   /* the lines below are to cut the text at 2 lines*/
   overflow: hidden;
   text-overflow: ellipsis;
@@ -95,6 +94,7 @@ a {
 }
 a:hover {
   color: rgba(0, 0, 0, 0.54);
+  text-decoration: none;
 }
 
 body {
