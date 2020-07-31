@@ -36,6 +36,13 @@ public final class CaptionTest {
       + "<text start=\"9.43\" dur=\"5.06\">line2</text>"
       + "<text start=\"14.49\" dur=\"5.03\">line3</text>" + "</transcript>";
 
+  final private String PROPER_XML_WITH_EMPTY_LINE =
+      "<?xml version=\"1.0\" encoding=\"utf-8\" ?><transcript>"
+          + "<text start=\"4.029\" dur=\"5.401\">line1</text>"
+          + "<text start=\"9.43\" dur=\"5.06\">line2</text>"
+          + "<text start=\"14.49\" dur=\"5.03\"></text>"
+          + "<text start=\"19.52\" dur=\"5.00\">line3</text>" + "</transcript>";
+
   final private String PROPER_XML_CAPTION = "line1 line2 line3";
 
   final private String BAD_XML = "<?xml version=\"1.0\" encoding=\"utf-8\" ?><transcript>"
@@ -56,6 +63,16 @@ public final class CaptionTest {
   @Test
   public void properXmlReturnsConcatenatedString() throws IOException {
     InputStream stream = new ByteArrayInputStream(PROPER_XML.getBytes());
+    when(captionServiceMock.fetchStream(eq(VIDEO_ID), contains(LANG_EN))).thenReturn(stream);
+
+    String actual = caption.getCaptionFromId(VIDEO_ID);
+
+    assertEquals(PROPER_XML_CAPTION, actual);
+  }
+
+  @Test
+  public void ignoreEmptyLineInXmlInConcatenatedString() throws IOException {
+    InputStream stream = new ByteArrayInputStream(PROPER_XML_WITH_EMPTY_LINE.getBytes());
     when(captionServiceMock.fetchStream(eq(VIDEO_ID), contains(LANG_EN))).thenReturn(stream);
 
     String actual = caption.getCaptionFromId(VIDEO_ID);

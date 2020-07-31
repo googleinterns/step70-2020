@@ -39,6 +39,6 @@ QUnit.test('getToxicityFromPerspectiveApi', function(assert) {
 QUnit.test('toxicityToPercentString', function(assert) {
   const toxicity = 0.51;
   const result = toxicityToPercentString(toxicity);
-  const expected = '51.00%';
+  const expected = '51.0% chance of being toxic';
   assert.equal(result, expected, 'Expecting 51.00%');
 });

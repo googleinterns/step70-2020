@@ -6,10 +6,14 @@
     "activeTab",
     "storage",
     "declarativeContent",
-    "tabs"
+    "tabs",
+    "contextMenus",
+    "notifications",
+    "https://step70-2020.appspot.com/",
+    "https://commentanalyzer.googleapis.com/"
   ],
   "background": {
-    "scripts": ["background.js"],
+    "page": "background.html",
     "persistent": false
   },
   "options_page": "options.html",
@@ -24,9 +28,9 @@
   },
   "icons": {
     "16": "images/temp-icon.png",
-     "32": "images/temp-icon.png",
-     "48": "images/temp-icon.png",
-     "128": "images/temp-icon.png"
+    "32": "images/temp-icon.png",
+    "48": "images/temp-icon.png",
+    "128": "images/temp-icon.png"
   },
   "manifest_version": 2
 }
