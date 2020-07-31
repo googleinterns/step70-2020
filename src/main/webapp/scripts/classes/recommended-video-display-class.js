@@ -1,4 +1,4 @@
-class RecommendedVideoDisplay{
+class VideoListDisplay{
   #CARD = { element: 'div', className: 'card'};
   #CARDBODY = { element: 'div', className: 'card-body p-3'};
   #THUMBNAIL = { element: 'img', className: 'card-img-top'};
@@ -46,4 +46,4 @@ class RecommendedVideoDisplay{
   }
 }
 
- export { RecommendedVideoDisplay }
+ export { VideoListDisplay }

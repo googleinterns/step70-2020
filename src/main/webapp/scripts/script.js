@@ -84,6 +84,11 @@ function createMenu() {
   }
 }
 
+function addMenuHeader() {
+  createMenu();
+  createHeader();
+}
+
 function displaySentiment(videoAnalysis) {
   const displayDom = document.getElementById('sentiment-display');
   const sentimentDom = document.getElementById('sentiment-container');

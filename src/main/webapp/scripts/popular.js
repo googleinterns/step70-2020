@@ -1,12 +1,12 @@
 import { getTrendingFromYoutubeApi } from './list-video-service.js';
 import { getRegions } from './region-selector.js';
-import { RecommendedVideoDisplay } from './classes/recommended-video-display-class.js';
+import { VideoListDisplay } from './classes/recommended-video-display-class.js';
 import { Video } from './classes/video-class.js';
 
 function loadPopular() {
   return popular.getTrendingFromYoutubeApi()
   .then((response) => {
-    const recommended = new RecommendedVideoDisplay('popular-list-container');
+    const recommended = new VideoListDisplay('popular-list-container');
     for(const item of response.items) {
       const video = new Video(item, null);
       recommended.addVideo(video);
