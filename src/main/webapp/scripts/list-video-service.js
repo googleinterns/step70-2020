@@ -12,7 +12,7 @@ function getPopularRequest(regionCode) {
       'snippet,statistics'
     ],
     'chart': 'mostPopular',
-    'maxResults': 12,
+    'maxResults': 24,
     'regionCode': regionCode
   };
 }
