@@ -4,6 +4,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -25,9 +26,10 @@ import static org.mockito.Mockito.*;
 
 public final class StoreVideosTest {
 
+  FetchOptions limit = FetchOptions.Builder.withLimit(2);
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-  private final Float SENTIMENT = 0.5f;
+  private final Float SENTIMENT_SCORE = 0.5f;
   private final String VIDEO_ID_1 = "test ID 1";
   private final String VIDEO_ID_2 = "test ID 2";
   private final String VIDEO_ID_3 = "test ID 3";
@@ -35,6 +37,7 @@ public final class StoreVideosTest {
   @Spy DatastoreService datastoreSpy = DatastoreServiceFactory.getDatastoreService();
 
   @InjectMocks StoreVideos storeVideos;
+  @InjectMocks StoreVideos storeVideos2;
 
   @Before
   public void setUp() {
@@ -51,9 +54,9 @@ public final class StoreVideosTest {
    */
   @Test
   public void addsNewEntitiesToDatastore() {
-    Assert.assertEquals(0, datastoreSpy.prepare(new Query("Video")).countEntities());
-    storeVideos.addToDatabase(VIDEO_ID_1, SENTIMENT);
-    Assert.assertEquals(1, datastoreSpy.prepare(new Query("Video")).countEntities());
+    Assert.assertEquals(0, datastoreSpy.prepare(new Query("Video")).countEntities(limit));
+    storeVideos.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
+    Assert.assertEquals(1, datastoreSpy.prepare(new Query("Video")).countEntities(limit));
   }
 
   /**
@@ -62,19 +65,39 @@ public final class StoreVideosTest {
    */
   @Test
   public void incrementsNumSearchesOfEntities() {
-    storeVideos.addToDatabase(VIDEO_ID_1, SENTIMENT);
-    storeVideos.addToDatabase(VIDEO_ID_1, SENTIMENT);
+    storeVideos.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
+    storeVideos.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
 
     PreparedQuery results = datastoreSpy.prepare(new Query("Video"));
 
     // Check that the entity isn't duplicated in datastore
-    Assert.assertEquals(1, results.countEntities()); 
+    Assert.assertEquals(1, results.countEntities(limit)); 
 
     // Check that numSearches was incremented
-    for (Entity entity : results.asIterable()) {
-      Long numSearches = (long) entity.getProperty("numSearches");
-      Assert.assertTrue(numSearches.equals(2L));
-    }
+    Long numSearches = (long) results.asSingleEntity().getProperty("numSearches");
+    Assert.assertTrue(numSearches.equals(2L));
+  }
+
+  /**
+   * An entity's numSearches should be incremented if two different users (two instances of the
+   * storeVideos class) search for the same video. 
+   */
+  @Test
+  public void differentUsersSearchSameVideo() {
+    StoreVideos storeVideos1Spy = spy(storeVideos);
+    StoreVideos storeVideos2Spy = spy(storeVideos2);
+
+    storeVideos1Spy.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
+    storeVideos2Spy.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
+
+    PreparedQuery results = datastoreSpy.prepare(new Query("Video"));
+
+    // Check that the entity isn't duplicated in datastore
+    Assert.assertEquals(1, results.countEntities(limit)); 
+
+    // Check that numSearches was incremented
+    Long numSearches = (long) results.asSingleEntity().getProperty("numSearches");
+    Assert.assertTrue(numSearches.equals(2L));
   }
 
   /**
@@ -82,13 +105,16 @@ public final class StoreVideosTest {
    * numSearches.
    */
   @Test(expected = ConcurrentModificationException.class)
-  public void throwsException() throws EntityNotFoundException, ConcurrentModificationException {
+  public void failureToIncrementThrowsException()
+      throws EntityNotFoundException, ConcurrentModificationException {
     StoreVideos storeVideosSpy = spy(storeVideos);
     
     // Add entity to database first
-    storeVideosSpy.addToDatabase(VIDEO_ID_1, SENTIMENT);
-    doThrow(new ConcurrentModificationException()).when(storeVideosSpy).incrementSearchCount(VIDEO_ID_1);
+    storeVideosSpy.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
+
     // Try to add the entity a second time, throw ConcurrentModificationException instead
-    storeVideosSpy.addToDatabase(VIDEO_ID_1, SENTIMENT);
+    doThrow(new ConcurrentModificationException())
+        .when(storeVideosSpy).incrementSearchCount(VIDEO_ID_1);
+    storeVideosSpy.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
   }
 }
