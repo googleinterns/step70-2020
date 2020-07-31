@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -31,8 +30,6 @@ public final class StoreVideosTest {
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
   private final Float SENTIMENT_SCORE = 0.5f;
   private final String VIDEO_ID_1 = "test ID 1";
-  private final String VIDEO_ID_2 = "test ID 2";
-  private final String VIDEO_ID_3 = "test ID 3";
 
   @Spy DatastoreService datastoreSpy = DatastoreServiceFactory.getDatastoreService();
 
