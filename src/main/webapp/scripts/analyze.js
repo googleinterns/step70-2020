@@ -1,5 +1,11 @@
+let player;
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('player', {});
+}
+
 async function analyzeVideo() {
   const videoId = getVideoId();
+  player.loadVideoById(videoId, 0, "large");
   displayLoading('sentiment-container');
   return fetch(`/sentiment?video-id=${videoId}`)
   .then(response => {
