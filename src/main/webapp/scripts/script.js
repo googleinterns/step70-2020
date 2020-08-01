@@ -7,6 +7,7 @@ const MENU_ITEMS = [
   {name: 'Positive', link: 'positive.html', icon: 'grade'},
   {name: 'Check', link: 'index.html', icon: 'check_circle'}
 ];
+let player;
 
 /**
  * Loads any Google APIs listed in the discoveryDocs
@@ -88,6 +89,7 @@ function createMenu() {
 function addMenuHeader() {
   createMenu();
   createHeader();
+  searchVideoFromParams()
 }
 
 function displaySentiment(videoAnalysis) {
@@ -122,10 +124,15 @@ function displayLoading(containerId) {
   containerDom.className = 'spinner-border text-primary';
 }
 
-function searchVideo() {
+/* Checks URL params for if there is a video that needs to be searched */
+function searchVideoFromParams() {
   queryString = window.location.search;
   if(queryString) {
     document.getElementById('video-url').value = 'https://www.youtube.com/watch' + window.location.search;
     analyzeVideo();
   }
+}
+
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('player', {});
 }
