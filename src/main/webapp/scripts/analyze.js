@@ -16,10 +16,14 @@ async function analyzeVideo() {
     }
   })
   .then(videoAnalysis => {
-    displaySentiment(videoAnalysis);
+    if(videoAnalysis.scoreAvailable) {
+      displaySentiment(videoAnalysis);
+    } else {
+      throw new Error('Video has no available captions or comments to analyze.');
+    }
   })
   .catch(error => {
-    displaySentiment({ scoreAvailable: false });
+    displaySentiment({ scoreAvailable: false, message: error.message});
     console.error(error);
   });
 }

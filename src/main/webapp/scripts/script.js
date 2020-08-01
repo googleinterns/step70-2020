@@ -1,4 +1,4 @@
-const API_KEY = 'AIzaSyDfFKa12whmutHemyB1VcVLCQnD2z443bw';
+const API_KEY = '';
 const YOUTUBE_DISCOVERY = 'https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest';
 
 const TITLE_TEXT = 'Youtube Vibe Check';
@@ -26,6 +26,7 @@ function loadApi() {
 
 function updateDom(text, containerId) {
   const containerDOM = document.getElementById(containerId);
+  containerDOM.classList.remove('spinner-border');
   containerDOM.innerText = text;
 }
 
@@ -84,6 +85,11 @@ function createMenu() {
   }
 }
 
+function addMenuHeader() {
+  createMenu();
+  createHeader();
+}
+
 function displaySentiment(videoAnalysis) {
   const displayDom = document.getElementById('sentiment-display');
   const sentimentDom = document.getElementById('sentiment-container');
@@ -101,7 +107,7 @@ function displaySentiment(videoAnalysis) {
   } else {
     sentimentDom.className = '';
     displayDom.className = 'alert alert-primary';
-    updateDom('An error occurred when analyzing this video', 'sentiment-container');
+    updateDom(videoAnalysis.message, 'sentiment-container');
   }
 }
 
