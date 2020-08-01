@@ -26,6 +26,7 @@ function loadApi() {
 
 function updateDom(text, containerId) {
   const containerDOM = document.getElementById(containerId);
+  containerDOM.classList.remove('spinner-border');
   containerDOM.innerText = text;
 }
 
@@ -106,7 +107,7 @@ function displaySentiment(videoAnalysis) {
   } else {
     sentimentDom.className = '';
     displayDom.className = 'alert alert-primary';
-    updateDom('An error occurred when analyzing this video', 'sentiment-container');
+    updateDom(videoAnalysis.message, 'sentiment-container');
   }
 }
 
