@@ -99,7 +99,13 @@ public class SentimentServlet extends HttpServlet {
 
     executor.shutdown();
 
-    String json = determineResponseJson(commentsList, captions, commentsScore, captionsScore);
+    float score = determineSentimentScore(commentsList, captions, commentsScore, captionsScore);
+
+    VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+        .setScore(score)
+        .setScoreAvailable(true)
+        .build();
+    String json = new Gson().toJson(videoAnalysis);
 
     response.setContentType("application/json;");
     response.getWriter().println(json);
@@ -116,12 +122,11 @@ public class SentimentServlet extends HttpServlet {
 
   /**
    * Determines the correct sentiment score to return to the client depending on the data available
-   * to analyze (comments, captions, or both). Then returns a Json String of VideoAnalysis.
+   * to analyze (comments, captions, or both).
    */
-  private String determineResponseJson(List<String> commentsList, String captions,
+  private float determineSentimentScore(List<String> commentsList, String captions,
       float commentsScore, float captionsScore) {
     float score = 0f;
-    boolean scoreAvailable = true;
 
     if (!commentsList.isEmpty() && !captions.isEmpty()) {
       // Average commentsScore and captionsScore
@@ -132,10 +137,6 @@ public class SentimentServlet extends HttpServlet {
       score = commentsScore;
     }
 
-    VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
-        .setScore(score)
-        .setScoreAvailable(scoreAvailable)
-        .build();
-    return new Gson().toJson(videoAnalysis);
+    return score;
   }
 }
