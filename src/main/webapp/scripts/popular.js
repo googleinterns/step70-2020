@@ -1,13 +1,15 @@
 import { getTrendingFromYoutubeApi } from './list-video-service.js';
 import { getRegions } from './region-selector.js';
+import { VideoListDisplay } from './classes/recommended-video-display-class.js';
+import { Video } from './classes/video-class.js';
 
 function loadPopular() {
-  return loadApi().then(popular.getTrendingFromYoutubeApi)
+  return popular.getTrendingFromYoutubeApi()
   .then((response) => {
+    const recommended = new VideoListDisplay('popular-list-container');
     for(const item of response.items) {
-      // Ready in a later PR: display the item nicely on the page
-      const containerDOM = document.getElementById('popular-list-container');
-      containerDOM.innerText += item;
+      const video = new Video(item, null);
+      recommended.addVideo(video);
     }
   })
   .catch((error) => {
@@ -23,7 +25,7 @@ function loadPopular() {
  * @return {Promise}
  */
 function addRegionOptions() {
-  return loadApi().then(popular.getRegions)
+  return popular.getRegions()
   .then((response) => {
     for(const region of response.items) {
       addOptionToSelectList(region.snippet.gl, region.snippet.name, 'region-select');
@@ -32,7 +34,20 @@ function addRegionOptions() {
 }
 
 let popular = { loadPopular, getTrendingFromYoutubeApi, addRegionOptions, getRegions };
-popular.addRegionOptions();
-popular.loadPopular();
+const regionSelectorElement = document.getElementById('region-select');
+regionSelectorElement.onchange = function(){
+  //clear page to display new region's videos
+  const popularListElement = document.getElementById('popular-list-container');
+  while(popularListElement.hasChildNodes()){
+    popularListElement.removeChild(popularListElement.firstChild);
+  }
+  popular.loadPopular();
+}
+
+displayLoading('popular-list-container');
+loadApi().then(() => {
+  popular.addRegionOptions();
+  popular.loadPopular();
+});
 
 export default popular;
