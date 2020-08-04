@@ -1,6 +1,6 @@
 async function analyzeVideo() {
-  const videoId = document.getElementById('video-url').value.split('v=')[1];
-
+  const videoId = getVideoId();
+  displayLoading('sentiment-container');
   return fetch(`/sentiment?video-id=${videoId}`)
   .then(response => {
     if (response.ok) {
@@ -10,14 +10,10 @@ async function analyzeVideo() {
     }
   })
   .then(videoAnalysis => {
-    if (videoAnalysis.scoreAvailable) {
-      updateDom(videoAnalysis.score.toString(), 'sentiment-container');
-    } else {
-      updateDom('Video has no available captions or comments to analyze.',
-          'sentiment-container');
-    }
+    displaySentiment(videoAnalysis);
   })
   .catch(error => {
-    updateDom(error.message, 'sentiment-container');
+    displaySentiment({ scoreAvailable: false });
+    console.error(error);
   });
 }

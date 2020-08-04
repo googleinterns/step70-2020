@@ -1,51 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Capstone Project</title>
+  <title>YouTube Vibe Check</title>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div id="content">
-
-    <form>
-      <label for="video-url">Video URL:</label>
-      <textarea name="video-url" id="video-url"></textarea>
-      <br/><br/>
-
-      <input type="button" value="Analyze" onclick="analyzeVideo()"/>
-    </form>
-
-    <p id="sentiment-container"></p>
-
-    <form>
-      <label for="comment">Comment:</label>
-      <textarea name="comment" id="comment-text"></textarea>
-      <br/><br/>
-
-      <input type="button" value="Is this Toxic?" onclick="getToxicity()"/>
-    </form>
-
-    <p id="toxicity-container"></p>
-
+<body onload="createMenu(); createHeader()">
+  <header></header>
+  <div class="row no-gutters fill">
+    <ul id="menu" class="nav flex-column"></ul>
+    <div id="content">
+      <form>
+        <h4>Video Vibe Check</h4>
+        <div class="form-group">
+          <label for="video-url">Input the URL of the Video to check:</label>
+          <input type="url" class="form-control" id="video-url" aria-describedby="urlInfo" placeholder="Enter URL">
+          <small id="urlHelp" class="form-text text-muted">Make sure your URL is in the format www.youtube.com/watch?v=[videoid]</small>
+        </br>
+          <input type="button" class="btn btn-primary" value="VIBE CHECK" onclick="analyzeVideo()"/>
+          <div id="sentiment-display" class="alert alert-primary">
+            <p id="sentiment-container" class="sentiment-score">0.0</p>
+            <h4>/10</h4>
+          </div>
+        </div>
+        </br>
+        <div class="iframe-container"></div>
+        </br>
+        <h4>Check Yourself</h4>
+        <div class="form-group">
+          <label for="comment-text">Check the toxicity of a comment:</label>
+          <input type="text" class="form-control" id="comment-text" placeholder="Type your comment here"/>
+        </br>
+          <input type="button" class="btn btn-primary" value="TOXICITY CHECK" onclick="getToxicity()"/>
+          <h4 id="toxicity-container"></h4>
+        </div>
+        </br>
+        <div class="form-group">
+          <h5>Post your comment to Youtube</h5>
+          <input type="button" id="authorize-button" class="btn btn-primary" value="LOG IN"/>
+          <div id="comment-button-container"></div>
+          <div id="result-text"></div>
+        </div>
+      </form>
+    </div>
   </div>
 
+  <script src="https://apis.google.com/js/api.js"></script>
   <script src="scripts/script.js"></script>
   <script src="scripts/analyze.js"></script>
   <script src="scripts/perspective.js"></script>
   <script src="scripts/perspective-api-service.js"></script>
   <script src="scripts/classes/comment-class.js"></script>
-  
-  <div>
-    <p>Post a comment to </p>
-    <a href="https://www.youtube.com/watch?v=gjKpAAezWQA">this video</a>
-    <button id="authorize-button">Authorize</button>
-    <div id="comment-button-container"></div>
-    <div id="result-text"></div>
-  
-    <script defer type="module" src="scripts/controller-auth.js"></script>
-    <script src="https://apis.google.com/js/api.js"></script>
-  </div>
-    
+  <script defer type="module" src="scripts/controller-auth.js"></script>
+
 </body>
 </html>
