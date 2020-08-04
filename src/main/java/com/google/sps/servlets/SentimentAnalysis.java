@@ -9,7 +9,6 @@ import java.io.IOException;
 public class SentimentAnalysis {
 
   private LanguageServiceClient languageService;
-  // private Sentiment sentiment;
 
   public SentimentAnalysis() throws IOException {
     languageService = LanguageServiceClient.create();

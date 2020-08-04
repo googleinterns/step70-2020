@@ -77,10 +77,10 @@ public class SentimentServlet extends HttpServlet {
     ExecutorService executor = Executors.newFixedThreadPool(MAX_THREADS);
 
     List<Future<Float>> commentScoreFutures = commentsList.stream()
-        .map(comment -> executor.submit(callableFactory(comment)))
+        .map(comment -> executor.submit(getSentimentScoreCallable(comment)))
         .collect(Collectors.toList());
 
-    Future<Float> captionFuture = executor.submit(callableFactory(captions));
+    Future<Float> captionFuture = executor.submit(getSentimentScoreCallable(captions));
 
     float commentsScore = 0f;
     float captionsScore = 0f;
@@ -105,7 +105,7 @@ public class SentimentServlet extends HttpServlet {
     response.getWriter().println(json);
   }
 
-  public Callable<Float> callableFactory(String text) {
+  public Callable<Float> getSentimentScoreCallable(String text) {
     return new Callable<Float>() {
       @Override
       public Float call() {
@@ -125,11 +125,11 @@ public class SentimentServlet extends HttpServlet {
 
     if (!commentsList.isEmpty() && !captions.isEmpty()) {
       // Average commentsScore and captionsScore
-      score = new Float((commentsScore + captionsScore) / 2f);
+      score = (commentsScore + captionsScore) / 2f;
     } else if (commentsList.isEmpty() && !captions.isEmpty()) {
-      score = new Float(captionsScore);
+      score = captionsScore;
     } else {
-      score = new Float(commentsScore);
+      score = commentsScore;
     }
 
     VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
