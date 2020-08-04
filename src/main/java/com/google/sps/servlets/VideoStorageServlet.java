@@ -7,6 +7,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,11 +27,11 @@ public class VideoStorageServlet extends HttpServlet {
     ArrayList<String> videos = new ArrayList<>();
 
     Query query = new Query("Video")
-        .addSort("sentiment", SortDirection.DESCENDING)
-        .addSort("numSearches", SortDirection.DESCENDING);
+      .addSort("sentiment", SortDirection.DESCENDING)
+      .addSort("numSearches", SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
 
-    for (Entity entity : results.asIterable()) {
+    for (Entity entity : results.asIterable(FetchOptions.Builder.withLimit(24))) {
       Key videoKey = entity.getKey();
       String id = videoKey.getName();
       videos.add(id);
