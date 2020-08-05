@@ -3,15 +3,23 @@
 <head>
   <title>Popular Videos</title>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div id="content">
-    <label for="region">Choose a region:</label>
-    <select name="region" id="region-select">
-      <option value="US">United States</option>
-    </select>
-    <div id="popular-list-container"></div>
+<body onload="createMenu(); createHeader()">
+  <header></header>
+  <div class="row no-gutters fill">
+    <ul id="menu" class="nav flex-column"></ul>
+    <div id="content" class="col">
+      <form class="form-inline">
+        <label for="region-select">Choose a region:</label>
+        <select class="form-control" id="region-select">
+          <option value="US">United States</option>
+        </select>
+      </form>
+      <div id="popular-list-container"></div>
+    </div>
   </div>
 
   <script src="https://apis.google.com/js/api.js"></script>

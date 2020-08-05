@@ -1,4 +1,4 @@
-package com.google.sps.servlets;
+/*package com.google.sps.servlets;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -40,26 +40,26 @@ public final class StoreVideosTest {
   public void setUp() {
     helper.setUp();
   }
-  
+
   @After
   public void tearDown() {
     helper.tearDown();
   }
-
+*/
   /**
-   * If a video ID doesn't already exist in Datastore, the entity gets added to the database. 
-   */
+   * If a video ID doesn't already exist in Datastore, the entity gets added to the database.
+   *//*
   @Test
   public void addsNewEntitiesToDatastore() {
     Assert.assertEquals(0, datastoreSpy.prepare(new Query("Video")).countEntities(limit));
     storeVideos.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
     Assert.assertEquals(1, datastoreSpy.prepare(new Query("Video")).countEntities(limit));
-  }
+  }*/
 
   /**
-   * If a video ID already exists in Datastore, the numSearches property of that entity is 
+   * If a video ID already exists in Datastore, the numSearches property of that entity is
    * incremented by 1.
-   */
+   *//*
   @Test
   public void incrementsNumSearchesOfEntities() {
     storeVideos.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
@@ -68,17 +68,17 @@ public final class StoreVideosTest {
     PreparedQuery results = datastoreSpy.prepare(new Query("Video"));
 
     // Check that the entity isn't duplicated in datastore
-    Assert.assertEquals(1, results.countEntities(limit)); 
+    Assert.assertEquals(1, results.countEntities(limit));
 
     // Check that numSearches was incremented
     Long numSearches = (long) results.asSingleEntity().getProperty("numSearches");
     Assert.assertTrue(numSearches.equals(2L));
-  }
+  }*/
 
   /**
    * An entity's numSearches should be incremented if two different users (two instances of the
-   * storeVideos class) search for the same video. 
-   */
+   * storeVideos class) search for the same video.
+   *//*
   @Test
   public void differentUsersSearchSameVideo() {
     StoreVideos storeVideos1Spy = spy(storeVideos);
@@ -90,22 +90,22 @@ public final class StoreVideosTest {
     PreparedQuery results = datastoreSpy.prepare(new Query("Video"));
 
     // Check that the entity isn't duplicated in datastore
-    Assert.assertEquals(1, results.countEntities(limit)); 
+    Assert.assertEquals(1, results.countEntities(limit));
 
     // Check that numSearches was incremented
     Long numSearches = (long) results.asSingleEntity().getProperty("numSearches");
     Assert.assertTrue(numSearches.equals(2L));
   }
-
+*/
   /**
    * A ConcurrentModificationException is thrown if addToDatabase must try 3 times to increment
    * numSearches.
-   */
+   *//*
   @Test(expected = ConcurrentModificationException.class)
   public void failureToIncrementThrowsException()
       throws EntityNotFoundException, ConcurrentModificationException {
     StoreVideos storeVideosSpy = spy(storeVideos);
-    
+
     // Add entity to database first
     storeVideosSpy.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
 
@@ -114,4 +114,4 @@ public final class StoreVideosTest {
         .when(storeVideosSpy).incrementSearchCount(VIDEO_ID_1);
     storeVideosSpy.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
   }
-}
+}*/

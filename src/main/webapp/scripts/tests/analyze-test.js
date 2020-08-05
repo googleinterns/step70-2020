@@ -28,7 +28,7 @@ QUnit.test('DOM updates with sentiment score', function (assert) {
   analyzeVideo()
   .then((value) => {
     assert.dom('#sentiment-container')
-        .hasProperty('innerText',SCORE.toString());
+        .hasProperty('innerText','5.3');
     done();
   });
 });

@@ -3,7 +3,15 @@ import popular from '../popular.js';
 const FAKE_ERROR = new Error('error message');
 
 const mockGetTrendingResponse = {
-  items: ['Example Title']
+  items: [{
+    id: 'sampleID',
+    statistics: { likeCount: 1},
+    snippet: {
+        title: 'Example Title',
+        thumbnails: { medium: { url: 'sampleURL'}}
+    }
+  }
+  ]
 };
 
 const mockGetRegionsResponse = {
@@ -13,13 +21,6 @@ const mockGetRegionsResponse = {
 }
 
 QUnit.module("list videos", {
-  beforeEach: function() {
-    // reset container before running test
-    document.getElementById('popular-list-container').innerText = '';
-    loadApi = sinon.fake.returns(
-      Promise.resolve()
-    );
-  },
   afterEach: function() {
     sinon.restore();
   },
@@ -27,24 +28,26 @@ QUnit.module("list videos", {
 
 QUnit.test('loadPopular - normal use', function(assert) {
   const done = assert.async();
+  document.getElementById('popular-list-container').innerHTML = '';
   const getTrendingFromYoutubeApi = sinon.fake.returns(
     Promise.resolve(mockGetTrendingResponse)
   );
   sinon.replace(popular, 'getTrendingFromYoutubeApi', getTrendingFromYoutubeApi);
   popular.loadPopular().then(() => {
-    assert.dom('#popular-list-container').hasText(mockGetTrendingResponse.items[0]);
+    assert.dom('.card').exists({ count: 1 });
     done();
   });
 });
 
 QUnit.test('loadPopular - API error', function(assert) {
   const done = assert.async();
+  document.getElementById('popular-list-container').innerHTML = '';
   const getTrendingFromYoutubeApi = sinon.fake.returns(
     Promise.reject(FAKE_ERROR)
   );
   sinon.replace(popular, 'getTrendingFromYoutubeApi', getTrendingFromYoutubeApi);
   popular.loadPopular().then(() => {
-    assert.dom('#popular-list-container').hasText('An error occured with YouTube');
+    assert.dom('#popular-list-container').hasText('An error occurred with YouTube');
     done();
   });
 });
