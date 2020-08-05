@@ -6,6 +6,7 @@ public class VideoAnalysis {
 
     private Float score;
     private boolean scoreAvailable;
+    private String videoId;
 
     public Builder setScore(Float score){
       this.score = score;
@@ -17,10 +18,16 @@ public class VideoAnalysis {
       return this;
     }
 
+    public Builder setVideoId(String id){
+      this.videoId = id;
+      return this;
+    }
+
     public VideoAnalysis build() {
       VideoAnalysis videoAnalysis = new VideoAnalysis();
       videoAnalysis.score = this.score;
       videoAnalysis.scoreAvailable = this.scoreAvailable;
+      videoAnalysis.videoId = this.videoId;
 
       return videoAnalysis;
     }
@@ -28,10 +35,12 @@ public class VideoAnalysis {
 
   private Float score;
   private boolean scoreAvailable;
+  private String videoId;
 
   private VideoAnalysis() {
     this.score = score;
     this.scoreAvailable = scoreAvailable;
+    this.videoId = videoId;
   }
 
   public Float getScore() {
@@ -48,5 +57,9 @@ public class VideoAnalysis {
 
   public void setScoreAvailable(boolean scoreAvailable) {
     this.scoreAvailable = scoreAvailable;
+  }
+
+  public void setVideoId(String id) {
+    this.videoId = id;
   }
 }
