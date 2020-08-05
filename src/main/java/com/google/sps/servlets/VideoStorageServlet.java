@@ -15,6 +15,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.google.sps.data.VideoAnalysis;
 
 @WebServlet("/positive_videos")
 public class VideoStorageServlet extends HttpServlet {
@@ -24,7 +25,7 @@ public class VideoStorageServlet extends HttpServlet {
   /** Responds with a JSON string containing video data. */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    ArrayList<String> videos = new ArrayList<>();
+    ArrayList<VideoAnalysis> videos = new ArrayList<>();
 
     Query query = new Query("Video")
       .addSort("sentiment", SortDirection.DESCENDING)
@@ -33,8 +34,13 @@ public class VideoStorageServlet extends HttpServlet {
 
     for (Entity entity : results.asIterable(FetchOptions.Builder.withLimit(24))) {
       Key videoKey = entity.getKey();
-      String id = videoKey.getName();
-      videos.add(id);
+      double scoreDouble = (double) entity.getProperty("sentiment");
+      String scoreStr = Double.toString(scoreDouble);
+      VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+        .setScore(Float.parseFloat(scoreStr))
+        .setVideoId(videoKey.getName())
+        .build();
+      videos.add(videoAnalysis);
     }
 
     Gson gson = new Gson();
