@@ -55,6 +55,7 @@ public class SentimentServlet extends HttpServlet {
 
     if (comments.isEmpty() && captions.isEmpty()) {
       VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+          .setId(videoId)
           .setScore(null)
           .setScoreAvailable(false)
           .build();
@@ -78,6 +79,7 @@ public class SentimentServlet extends HttpServlet {
     }
 
     VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+        .setId(videoId)
         .setScore(score)
         .setScoreAvailable(true)
         .build();

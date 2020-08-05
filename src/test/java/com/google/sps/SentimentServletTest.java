@@ -74,7 +74,9 @@ public final class SentimentServletTest {
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    String expected = "{\"score\":" + df.format(SCORE) + ",\"scoreAvailable\":true}\n";
+    String expected = "{\"id\":\"" + VIDEO_ID +
+        "\",\"score\":" + df.format(SCORE) +
+        ",\"scoreAvailable\":true}\n";
 
     Assert.assertEquals(expected, stringWriter.toString());
   }
@@ -97,7 +99,9 @@ public final class SentimentServletTest {
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    String expected = "{\"score\":" + df.format(SCORE) + ",\"scoreAvailable\":true}\n";
+    String expected = "{\"id\":\"" + VIDEO_ID +
+        "\",\"score\":" + df.format(SCORE) +
+        ",\"scoreAvailable\":true}\n";
 
     Assert.assertEquals(expected, stringWriter.toString());
   }
@@ -120,7 +124,9 @@ public final class SentimentServletTest {
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    String expected = "{\"score\":" + df.format(SCORE) + ",\"scoreAvailable\":true}\n";
+    String expected = "{\"id\":\"" + VIDEO_ID +
+        "\",\"score\":" + df.format(SCORE) +
+        ",\"scoreAvailable\":true}\n";
 
     Assert.assertEquals(expected, stringWriter.toString());
   }
@@ -140,7 +146,7 @@ public final class SentimentServletTest {
 
     sentimentServlet.doGet(requestMock, responseSpy);
     
-    String expectedNoData = "{\"scoreAvailable\":false}\n";
+    String expectedNoData = "{\"id\":\"" + VIDEO_ID + "\",\"scoreAvailable\":false}\n";
 
     Assert.assertEquals(expectedNoData, stringWriter.toString());
   }
@@ -178,7 +184,9 @@ public final class SentimentServletTest {
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    String expected = "{\"score\":" + df.format(SCORE) + ",\"scoreAvailable\":true}\n";
+    String expected = "{\"id\":\"" + VIDEO_ID +
+        "\",\"score\":" + df.format(SCORE) +
+        ",\"scoreAvailable\":true}\n";
 
     verify(responseSpy).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
         "Comments could not be retrieved.");
