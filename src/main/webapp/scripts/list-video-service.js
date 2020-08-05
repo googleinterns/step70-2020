@@ -17,4 +17,14 @@ function getPopularRequest(regionCode) {
   };
 }
 
-export { getTrendingFromYoutubeApi }
+function getVideoFromYoutubeApi(id) {
+  return gapi.client.youtube.videos.list({
+      'part': ['snippet,contentDetails,statistics'],
+      'id': [id]
+  })
+  .then(function(response) {
+    return response.result;
+  });
+}
+
+export { getTrendingFromYoutubeApi, getVideoFromYoutubeApi}
