@@ -1,4 +1,4 @@
-/*package com.google.sps.servlets;
+package com.google.sps.servlets;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -7,6 +7,7 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import java.util.ConcurrentModificationException;
@@ -45,21 +46,21 @@ public final class StoreVideosTest {
   public void tearDown() {
     helper.tearDown();
   }
-*/
+
   /**
    * If a video ID doesn't already exist in Datastore, the entity gets added to the database.
-   *//*
+   */
   @Test
   public void addsNewEntitiesToDatastore() {
     Assert.assertEquals(0, datastoreSpy.prepare(new Query("Video")).countEntities(limit));
     storeVideos.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
     Assert.assertEquals(1, datastoreSpy.prepare(new Query("Video")).countEntities(limit));
-  }*/
+  }
 
   /**
    * If a video ID already exists in Datastore, the numSearches property of that entity is
    * incremented by 1.
-   *//*
+   */
   @Test
   public void incrementsNumSearchesOfEntities() {
     storeVideos.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
@@ -73,12 +74,12 @@ public final class StoreVideosTest {
     // Check that numSearches was incremented
     Long numSearches = (long) results.asSingleEntity().getProperty("numSearches");
     Assert.assertTrue(numSearches.equals(2L));
-  }*/
+  }
 
   /**
    * An entity's numSearches should be incremented if two different users (two instances of the
    * storeVideos class) search for the same video.
-   *//*
+   */
   @Test
   public void differentUsersSearchSameVideo() {
     StoreVideos storeVideos1Spy = spy(storeVideos);
@@ -96,11 +97,12 @@ public final class StoreVideosTest {
     Long numSearches = (long) results.asSingleEntity().getProperty("numSearches");
     Assert.assertTrue(numSearches.equals(2L));
   }
-*/
+  
   /**
    * A ConcurrentModificationException is thrown if addToDatabase must try 3 times to increment
    * numSearches.
-   *//*
+   */
+
   @Test(expected = ConcurrentModificationException.class)
   public void failureToIncrementThrowsException()
       throws EntityNotFoundException, ConcurrentModificationException {
@@ -111,7 +113,7 @@ public final class StoreVideosTest {
 
     // Try to add the entity a second time, throw ConcurrentModificationException instead
     doThrow(new ConcurrentModificationException())
-        .when(storeVideosSpy).incrementSearchCount(VIDEO_ID_1);
+        .when(datastoreSpy).put(any(Transaction.class), any(Entity.class));
     storeVideosSpy.addToDatabase(VIDEO_ID_1, SENTIMENT_SCORE);
   }
-}*/
+}

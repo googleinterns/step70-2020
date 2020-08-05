@@ -25,7 +25,7 @@ public class StoreVideos extends HttpServlet {
   public Entity createVideoEntity(String id) {
     Entity videoEntity = new Entity("Video", id);
     videoEntity.setProperty("sentiment", 0);
-    videoEntity.setProperty("numSearches", 0);
+    videoEntity.setProperty("numSearches", 0L);
     return videoEntity;
   }
 
@@ -34,28 +34,29 @@ public class StoreVideos extends HttpServlet {
     Entity videoEntity;
 
     // get datastore Entity or create one if needed
-    try{
+    try {
       Key videoKey = KeyFactory.createKey("Video", id);
       videoEntity = datastore.get(transaction, videoKey);
-    } catch(EntityNotFoundException e) {
+    } catch (EntityNotFoundException e) {
       videoEntity = createVideoEntity(id);
     }
 
     // increment number of searches
-    videoEntity.setProperty("numSearches", (long)videoEntity.getProperty("numSearches") + 1);
+    videoEntity.setProperty("numSearches",
+        Long.sum((Long) videoEntity.getProperty("numSearches"), 1L));
 
     // update database
-    for(int numRetries = 3; numRetries > 0; numRetries--) {
+    for (int numRetries = 2; numRetries >= 0; numRetries--) {
       try {
         datastore.put(transaction, videoEntity);
         transaction.commit();
         break;
-      } catch(ConcurrentModificationException e) {
-        if(numRetries == 0) {
+      } catch (ConcurrentModificationException e) {
+        if (numRetries == 0) {
           throw e;
         }
       } finally {
-        if(transaction.isActive()) {
+        if (transaction.isActive()) {
           transaction.rollback();
         }
       }
