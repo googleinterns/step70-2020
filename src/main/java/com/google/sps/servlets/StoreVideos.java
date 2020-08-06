@@ -42,9 +42,8 @@ public class StoreVideos extends HttpServlet {
     }
 
     // increment number of searches
-    videoEntity.setProperty("numSearches", (int)videoEntity.getProperty("numSearches") + 1);
-    //videoEntity.setProperty("numSearches",
-        //Long.sum((Long) videoEntity.getProperty("numSearches"), 1L));
+    int n = new Integer(videoEntity.getProperty("numSearches").toString());
+    videoEntity.setProperty("numSearches", n + 1);
 
     // update database
     for (int numRetries = 2; numRetries >= 0; numRetries--) {

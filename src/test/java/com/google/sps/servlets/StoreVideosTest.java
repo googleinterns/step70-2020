@@ -72,8 +72,8 @@ public final class StoreVideosTest {
     Assert.assertEquals(1, results.countEntities(limit));
 
     // Check that numSearches was incremented
-    int numSearches = (int) results.asSingleEntity().getProperty("numSearches");
-    Assert.assertTrue(numSearches == 2);
+    int actual = new Integer(results.asSingleEntity().getProperty("numSearches").toString());
+    Assert.assertEquals(2, actual);
   }
 
   /**
@@ -94,8 +94,8 @@ public final class StoreVideosTest {
     Assert.assertEquals(1, results.countEntities(limit));
 
     // Check that numSearches was incremented
-    int numSearches = (int) results.asSingleEntity().getProperty("numSearches");
-    Assert.assertTrue(numSearches == 2);
+    int actual = new Integer(results.asSingleEntity().getProperty("numSearches").toString());
+    Assert.assertEquals(2, actual);
   }
 
   /**
