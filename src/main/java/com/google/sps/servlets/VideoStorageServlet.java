@@ -33,14 +33,26 @@ public class VideoStorageServlet extends HttpServlet {
     PreparedQuery results = datastore.prepare(query);
 
     // Create list of video IDs stored in datastore.
-    ArrayList<VideoAnalysis> videos = StreamSupport
+    ArrayList<VideoAnalysis> videos = new ArrayList<>();
+    for (Entity entity : results.asIterable(FetchOptions.Builder.withLimit(24))) {
+      Key videoKey = entity.getKey();
+      double scoreDouble = (double) entity.getProperty("sentiment");
+      String scoreStr = Double.toString(scoreDouble);
+      VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+        .setScore(((Double) entity.getProperty("sentiment")).floatValue())//(Float.parseFloat(scoreStr))
+        .setId(videoKey.getName())
+        .setScoreAvailable(true)
+        .build();
+      videos.add(videoAnalysis);
+    }
+    /*ArrayList<VideoAnalysis> videos = StreamSupport
         .stream(results.asIterable(FetchOptions.Builder.withLimit(24)).spliterator(), false)
         .map(entity -> new VideoAnalysis.Builder()
             .setId(entity.getKey().getName())
             .setScore(((Double) entity.getProperty("sentiment")).floatValue())
             .setScoreAvailable(true)
             .build())
-        .collect(Collectors.toCollection(ArrayList::new));
+        .collect(Collectors.toCollection(ArrayList::new));*/
 
     Gson gson = new Gson();
     String json = gson.toJson(videos);

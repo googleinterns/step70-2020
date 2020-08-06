@@ -23,6 +23,7 @@ public class SentimentServlet extends HttpServlet {
   private Caption captionService;
   private LanguageServiceClient languageService;
   private Sentiment sentiment;
+  private StoreVideos database;
   private final String INVALID_INPUT_ERROR = "Video is private or does not exist.";
   private final String COMMENTS_FAILED_ERROR = "Comments could not be retrieved.";
   private final String NLP_API_ERROR = "Language service client failed.";
@@ -33,12 +34,13 @@ public class SentimentServlet extends HttpServlet {
     languageService = LanguageServiceClient.create();
     captionService = new Caption();
     commentService = new CommentService();
+    database = new StoreVideos();
   }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String videoId = request.getParameter("video-id");
-    
+
     List<String> commentsList = new ArrayList<>();
     try {
       commentsList = commentService.getCommentsFromId(videoId);
@@ -78,6 +80,8 @@ public class SentimentServlet extends HttpServlet {
       return;
     }
 
+    database.addToDatabase(videoId, score);
+
     VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
         .setId(videoId)
         .setScore(score)
@@ -91,7 +95,7 @@ public class SentimentServlet extends HttpServlet {
 
   /**
    * Calculates sentiment score of text. The score is from -1 (negative) to +1 (positive).
-   */ 
+   */
   private Float calculateSentimentScore(String text) throws ApiException {
     Document doc = Document.newBuilder()
         .setContent(text)
