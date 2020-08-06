@@ -24,6 +24,7 @@ class VideoListDisplay{
     const thumbnail = this.newElement(this.#THUMBNAIL);
     const title = this.newElement(this.#TITLE);
     const text = this.newElement(this.#TEXT);
+    const link = document.createElement('a');
     thumbnail.src = video.thumbnail;
     title.innerText = video.title;
     title.title =  video.title;
@@ -32,10 +33,12 @@ class VideoListDisplay{
     } else {
       text.innerText = video.sentiment;
     }
+    link.href = '/index.html?v=' + video.id;
     cardBody.appendChild(title);
     cardBody.appendChild(text);
-    card.appendChild(thumbnail);
-    card.appendChild(cardBody);
+    link.appendChild(thumbnail);
+    link.appendChild(cardBody);
+    card.appendChild(link);
     return card;
   }
 
