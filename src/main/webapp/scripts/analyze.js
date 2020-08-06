@@ -1,6 +1,6 @@
 async function analyzeVideo() {
   const videoId = getVideoId();
-  player.loadVideoById(videoId);
+  player.loadVideoById(videoId); // player is a global variable for YouTube iFrame API player
   displayLoading('sentiment-container');
   return fetch(`/sentiment?video-id=${videoId}`)
   .then(response => {
