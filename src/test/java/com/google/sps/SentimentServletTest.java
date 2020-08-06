@@ -7,6 +7,7 @@ import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.Sentiment;
 import com.google.sps.servlets.Caption;
 import com.google.sps.servlets.CommentService;
+import com.google.sps.servlets.SentimentAnalysis;
 import com.google.sps.servlets.SentimentServlet;
 import com.google.sps.servlets.StoreVideos;
 import java.io.IOException;
@@ -35,24 +36,24 @@ import static org.mockito.Mockito.*;
 public final class SentimentServletTest {
 
   private final String VIDEO_ID = "test id";
-  private final Float SCORE = new Float(0.05f);
+  private final Float SCORE_0 = new Float(0.05);
+  private final Float SCORE_1 = new Float(-0.1);
+  private final Float SCORE_2 = new Float(0.8);
   private StringWriter stringWriter;
   private PrintWriter writer;
-  private DecimalFormat df = new DecimalFormat("#.##");
 
   @Mock CommentService commentServiceMock;
   @Mock Caption captionServiceMock;
+  @Mock SentimentAnalysis sentimentAnalysisMock;
   @Mock StoreVideos databaseMock;
   @Mock(answer = Answers.RETURNS_DEEP_STUBS) HttpServletRequest requestMock;
-  @Mock(answer = Answers.RETURNS_DEEP_STUBS) LanguageServiceClient languageServiceMock;
-  @Mock(answer = Answers.RETURNS_DEEP_STUBS) Sentiment sentimentMock;
 
   @Spy HttpServletResponse responseSpy;
 
   @InjectMocks SentimentServlet sentimentServlet;
 
   @Before
-  public void setUp() throws IOException, Exception {
+  public void setUp() throws IOException {
     stringWriter = new StringWriter();
     writer = new PrintWriter(stringWriter);
     when(responseSpy.getWriter()).thenReturn(writer);
@@ -70,14 +71,16 @@ public final class SentimentServletTest {
     when(requestMock.getParameter("video-id")).thenReturn(VIDEO_ID);
     when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
     when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
-    when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
-        .thenReturn(sentimentMock);
-    when(sentimentMock.getScore()).thenReturn(SCORE);
+    when(sentimentAnalysisMock.calculateSentimentScore(comments.get(0))).thenReturn(SCORE_0);
+    when(sentimentAnalysisMock.calculateSentimentScore(comments.get(1))).thenReturn(SCORE_1);
+    when(sentimentAnalysisMock.calculateSentimentScore(comments.get(2))).thenReturn(SCORE_2);
+    when(sentimentAnalysisMock.calculateSentimentScore(captions)).thenReturn(SCORE_2);
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
+    Float average = ((SCORE_0 + SCORE_1 + SCORE_2) / comments.size() + SCORE_2) / 2f;
     String expected = "{\"id\":\"" + VIDEO_ID +
-        "\",\"score\":" + df.format(SCORE) +
+        "\",\"score\":" + average +
         ",\"scoreAvailable\":true}\n";
 
     Assert.assertEquals(expected, stringWriter.toString());
@@ -95,14 +98,12 @@ public final class SentimentServletTest {
     when(requestMock.getParameter("video-id")).thenReturn(VIDEO_ID);
     when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
     when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
-    when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
-        .thenReturn(sentimentMock);
-    when(sentimentMock.getScore()).thenReturn(SCORE);
+    when(sentimentAnalysisMock.calculateSentimentScore(anyString())).thenReturn(SCORE_0);
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
     String expected = "{\"id\":\"" + VIDEO_ID +
-        "\",\"score\":" + df.format(SCORE) +
+        "\",\"score\":" + SCORE_0 +
         ",\"scoreAvailable\":true}\n";
 
     Assert.assertEquals(expected, stringWriter.toString());
@@ -120,14 +121,16 @@ public final class SentimentServletTest {
     when(requestMock.getParameter("video-id")).thenReturn(VIDEO_ID);
     when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
     when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
-    when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
-        .thenReturn(sentimentMock);
-    when(sentimentMock.getScore()).thenReturn(SCORE);
+    when(sentimentAnalysisMock.calculateSentimentScore(anyString()))
+        .thenReturn(SCORE_0)
+        .thenReturn(SCORE_1)
+        .thenReturn(SCORE_2);
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
+    Float average = (SCORE_0 + SCORE_1 + SCORE_2) / comments.size();
     String expected = "{\"id\":\"" + VIDEO_ID +
-        "\",\"score\":" + df.format(SCORE) +
+        "\",\"score\":" + average +
         ",\"scoreAvailable\":true}\n";
 
     Assert.assertEquals(expected, stringWriter.toString());
@@ -180,14 +183,12 @@ public final class SentimentServletTest {
     when(commentServiceMock.getCommentsFromId(VIDEO_ID))
         .thenThrow(GoogleJsonResponseException.class);
     when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
-    when(languageServiceMock.analyzeSentiment(any(Document.class)).getDocumentSentiment())
-        .thenReturn(sentimentMock);
-    when(sentimentMock.getScore()).thenReturn(SCORE);
+    when(sentimentAnalysisMock.calculateSentimentScore(anyString())).thenReturn(SCORE_0);
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
     String expected = "{\"id\":\"" + VIDEO_ID +
-        "\",\"score\":" + df.format(SCORE) +
+        "\",\"score\":" +SCORE_0 +
         ",\"scoreAvailable\":true}\n";
 
     verify(responseSpy).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
@@ -206,7 +207,7 @@ public final class SentimentServletTest {
     when(requestMock.getParameter("video-id")).thenReturn(VIDEO_ID);
     when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
     when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
-    when(languageServiceMock.analyzeSentiment(any(Document.class))).thenThrow(ApiException.class);
+    when(sentimentAnalysisMock.calculateSentimentScore(anyString())).thenThrow(ApiException.class);
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
