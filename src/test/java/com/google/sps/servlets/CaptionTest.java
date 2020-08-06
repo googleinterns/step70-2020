@@ -22,6 +22,9 @@ import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.Invocation;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 @RunWith(JUnit4.class)
 public final class CaptionTest {
@@ -62,8 +65,8 @@ public final class CaptionTest {
 
   @Test
   public void properXmlReturnsConcatenatedString() throws IOException {
-    InputStream stream = new ByteArrayInputStream(PROPER_XML.getBytes());
-    when(captionServiceMock.fetchStream(eq(VIDEO_ID), contains(LANG_EN))).thenReturn(stream);
+    when(captionServiceMock.fetchStream(eq(VIDEO_ID), contains(LANG_EN)))
+        .thenAnswer(invocation -> new ByteArrayInputStream(PROPER_XML.getBytes()));
 
     String actual = caption.getCaptionFromId(VIDEO_ID);
 
@@ -72,8 +75,8 @@ public final class CaptionTest {
 
   @Test
   public void ignoreEmptyLineInXmlInConcatenatedString() throws IOException {
-    InputStream stream = new ByteArrayInputStream(PROPER_XML_WITH_EMPTY_LINE.getBytes());
-    when(captionServiceMock.fetchStream(eq(VIDEO_ID), contains(LANG_EN))).thenReturn(stream);
+    when(captionServiceMock.fetchStream(eq(VIDEO_ID), contains(LANG_EN)))
+        .thenAnswer(invocation -> new ByteArrayInputStream(PROPER_XML_WITH_EMPTY_LINE.getBytes()));
 
     String actual = caption.getCaptionFromId(VIDEO_ID);
 
@@ -82,8 +85,8 @@ public final class CaptionTest {
 
   @Test
   public void badXmlReturnsNullIgnoringSAXException() throws IOException {
-    InputStream stream = new ByteArrayInputStream(BAD_XML.getBytes());
-    when(captionServiceMock.fetchStream(eq(VIDEO_ID), contains(LANG_EN))).thenReturn(stream);
+    when(captionServiceMock.fetchStream(eq(VIDEO_ID), contains(LANG_EN)))
+        .thenAnswer(invocation -> new ByteArrayInputStream(BAD_XML.getBytes()));
 
     String actual = caption.getCaptionFromId(VIDEO_ID);
 
@@ -92,8 +95,8 @@ public final class CaptionTest {
 
   @Test
   public void nonDefaultLanguageReturnsConcatenatedString() throws IOException {
-    InputStream stream = new ByteArrayInputStream(PROPER_XML.getBytes());
-    when(captionServiceMock.fetchStream(eq(VIDEO_ID), eq(LANG_EN_GB))).thenReturn(stream);
+    when(captionServiceMock.fetchStream(eq(VIDEO_ID), eq(LANG_EN_GB)))
+        .thenAnswer(invocation -> new ByteArrayInputStream(PROPER_XML.getBytes()));
     when(captionServiceMock.fetchStream(eq(VIDEO_ID), not(eq(LANG_EN_GB))))
         .thenThrow(new IOException());
 
