@@ -6,7 +6,6 @@ function loadPositive() {
   return fetch('positive_videos')
   .then(response => response.json())
   .then((responseJson) => {
-    console.log(responseJson)
     const recommended = new VideoListDisplay('positive-list-container');
     for(const result of responseJson) {
       positive.getVideoFromYoutubeApi(result.id).then((videoData) => {
