@@ -25,9 +25,9 @@
             <h4>/10</h4>
           </div>
         </div>
-        </br>
-        <div class="iframe-container"></div>
-        </br>
+        <div class="embed-responsive embed-responsive-16by9">
+          <div id="player"></div>
+        </div>
         <h4>Check Yourself</h4>
         <div class="form-group">
           <label for="comment-text">Check the toxicity of a comment:</label>
@@ -36,7 +36,7 @@
           <input type="button" class="btn btn-primary" value="TOXICITY CHECK" onclick="getToxicity()"/>
           <h4 id="toxicity-container"></h4>
         </div>
-        </br>
+      </br>
         <div class="form-group">
           <h5>Post your comment to Youtube</h5>
           <input type="button" id="authorize-button" class="btn btn-primary" value="LOG IN"/>
@@ -47,6 +47,7 @@
     </div>
   </div>
 
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script src="https://apis.google.com/js/api.js"></script>
   <script src="scripts/script.js"></script>
   <script src="scripts/analyze.js"></script>
