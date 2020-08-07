@@ -188,7 +188,7 @@ public final class SentimentServletTest {
     sentimentServlet.doGet(requestMock, responseSpy);
 
     String expected = "{\"id\":\"" + VIDEO_ID +
-        "\",\"score\":" +SCORE_0 +
+        "\",\"score\":" + SCORE_0 +
         ",\"scoreAvailable\":true}\n";
 
     verify(responseSpy).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
