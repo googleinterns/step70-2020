@@ -31,7 +31,7 @@ class VideoListDisplay{
     if(video.sentiment === null) {
       text.innerText = video.likeCount + ' likes';
     } else {
-      text.innerText = video.sentiment;
+      text.innerText = 'Score: ' + sentimentScoreToNumerator(video.sentiment) + '/10';
     }
     link.href = '/index.html?v=' + video.id;
     cardBody.appendChild(title);

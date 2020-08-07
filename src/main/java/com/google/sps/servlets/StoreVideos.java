@@ -22,14 +22,14 @@ public class StoreVideos extends HttpServlet {
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-  public Entity createVideoEntity(String id) {
+  public Entity createVideoEntity(String id, Float sentiment) {
     Entity videoEntity = new Entity("Video", id);
-    videoEntity.setProperty("sentiment", 0);
-    videoEntity.setProperty("numSearches", 0L);
+    videoEntity.setProperty("sentiment", sentiment);
+    videoEntity.setProperty("numSearches", 0);
     return videoEntity;
   }
 
-  public void addToDatabase(String id, float sentiment) {
+  public void addToDatabase(String id, Float sentiment) {
     Transaction transaction = datastore.beginTransaction();
     Entity videoEntity;
 
@@ -38,12 +38,13 @@ public class StoreVideos extends HttpServlet {
       Key videoKey = KeyFactory.createKey("Video", id);
       videoEntity = datastore.get(transaction, videoKey);
     } catch (EntityNotFoundException e) {
-      videoEntity = createVideoEntity(id);
+      videoEntity = createVideoEntity(id, sentiment);
     }
 
-    // increment number of searches
-    videoEntity.setProperty("numSearches",
-        Long.sum((Long) videoEntity.getProperty("numSearches"), 1L));
+    // increment number of searches.
+    // Must convert to String due to how Datastore is storing the properties. TODO: fix that issue
+    int numSearches = new Integer(videoEntity.getProperty("numSearches").toString());
+    videoEntity.setProperty("numSearches", numSearches + 1);
 
     // update database
     for (int numRetries = 2; numRetries >= 0; numRetries--) {

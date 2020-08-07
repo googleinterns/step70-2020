@@ -29,7 +29,7 @@ public final class StoreVideosTest {
   FetchOptions limit = FetchOptions.Builder.withLimit(2);
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-  private final Float SENTIMENT_SCORE = 0.5f;
+  private final Float SENTIMENT_SCORE = 0.5F;
   private final String VIDEO_ID_1 = "test ID 1";
 
   @Spy DatastoreService datastoreSpy = DatastoreServiceFactory.getDatastoreService();
@@ -72,8 +72,8 @@ public final class StoreVideosTest {
     Assert.assertEquals(1, results.countEntities(limit));
 
     // Check that numSearches was incremented
-    Long numSearches = (long) results.asSingleEntity().getProperty("numSearches");
-    Assert.assertTrue(numSearches.equals(2L));
+    int actual = new Integer(results.asSingleEntity().getProperty("numSearches").toString());
+    Assert.assertEquals(2, actual);
   }
 
   /**
@@ -94,10 +94,10 @@ public final class StoreVideosTest {
     Assert.assertEquals(1, results.countEntities(limit));
 
     // Check that numSearches was incremented
-    Long numSearches = (long) results.asSingleEntity().getProperty("numSearches");
-    Assert.assertTrue(numSearches.equals(2L));
+    int actual = new Integer(results.asSingleEntity().getProperty("numSearches").toString());
+    Assert.assertEquals(2, actual);
   }
-  
+
   /**
    * A ConcurrentModificationException is thrown if addToDatabase must try 3 times to increment
    * numSearches.

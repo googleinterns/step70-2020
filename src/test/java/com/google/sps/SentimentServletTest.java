@@ -9,6 +9,7 @@ import com.google.sps.servlets.Caption;
 import com.google.sps.servlets.CommentService;
 import com.google.sps.servlets.SentimentAnalysis;
 import com.google.sps.servlets.SentimentServlet;
+import com.google.sps.servlets.StoreVideos;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -40,11 +41,11 @@ public final class SentimentServletTest {
   private final Float SCORE_2 = new Float(0.8);
   private StringWriter stringWriter;
   private PrintWriter writer;
-  private DecimalFormat df = new DecimalFormat("#.##");
 
   @Mock CommentService commentServiceMock;
   @Mock Caption captionServiceMock;
   @Mock SentimentAnalysis sentimentAnalysisMock;
+  @Mock StoreVideos databaseMock;
   @Mock(answer = Answers.RETURNS_DEEP_STUBS) HttpServletRequest requestMock;
 
   @Spy HttpServletResponse responseSpy;

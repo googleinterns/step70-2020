@@ -26,15 +26,19 @@ public class SentimentServlet extends HttpServlet {
 
   private CommentService commentService;
   private Caption captionService;
+  private StoreVideos database;
+  private final String INVALID_INPUT_ERROR = "Video is private or does not exist.";
+  private final String COMMENTS_FAILED_ERROR = "Comments could not be retrieved.";
+  private final String NLP_API_ERROR = "Language service client failed.";
+  private final String NO_DATA_ERROR = "No comments or captions available to analyze.";
+  private final String READER_ERROR = "Reading video ID failed.";
   private SentimentAnalysis sentimentAnalysis = new SentimentAnalysis();
-  private static final String INVALID_INPUT_ERROR = "Video is private or does not exist.";
-  private static final String COMMENTS_FAILED_ERROR = "Comments could not be retrieved.";
-  private static final String NLP_API_ERROR = "Language service client failed.";
   private static final int MAX_THREADS = 26; // 25 thread pools for comments, 1 for captions
 
   public SentimentServlet() throws IOException, GeneralSecurityException {
     captionService = new Caption();
     commentService = new CommentService();
+    database = new StoreVideos();
   }
 
   /**
@@ -100,6 +104,7 @@ public class SentimentServlet extends HttpServlet {
     executor.shutdown();
 
     float score = determineSentimentScore(commentsList, captions, commentsScore, captionsScore);
+    database.addToDatabase(videoId, score);
 
     VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
         .setId(videoId)
