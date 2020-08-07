@@ -41,9 +41,10 @@ public class StoreVideos extends HttpServlet {
       videoEntity = createVideoEntity(id, sentiment);
     }
 
-    // increment number of searches
-    int n = new Integer(videoEntity.getProperty("numSearches").toString());
-    videoEntity.setProperty("numSearches", n + 1);
+    // increment number of searches.
+    // Must convert to String due to how Datastore is storing the properties. TODO: fix that issue
+    int numSearches = new Integer(videoEntity.getProperty("numSearches").toString());
+    videoEntity.setProperty("numSearches", numSearches + 1);
 
     // update database
     for (int numRetries = 2; numRetries >= 0; numRetries--) {

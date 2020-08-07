@@ -23,7 +23,7 @@ function getVideoFromYoutubeApi(id) {
       'id': [id]
   })
   .then(function(response) {
-    return response.result;
+    return response.result.items[0];
   });
 }
 

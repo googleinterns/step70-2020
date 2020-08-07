@@ -9,7 +9,7 @@ function loadPositive() {
     const recommended = new VideoListDisplay('positive-list-container');
     for(const result of responseJson) {
       positive.getVideoFromYoutubeApi(result.id).then((videoData) => {
-        const video = new Video(videoData.items[0], result.score);
+        const video = new Video(videoData, result.score);
         recommended.addVideo(video);
       }).catch((error) => {
         updateDom('An error occurred with YouTube', 'positive-list-container');
