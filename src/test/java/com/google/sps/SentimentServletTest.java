@@ -60,7 +60,7 @@ public final class SentimentServletTest {
 
   /**
    * A sentiment score should be calculated for a list of comments and String of captions and the
-   * score should be printed in a Json object. 
+   * score should be printed in a Json object.
    */
   @Test
   public void printsVideoAnalysisJsonObject() throws IOException {
@@ -78,20 +78,22 @@ public final class SentimentServletTest {
     sentimentServlet.doGet(requestMock, responseSpy);
 
     Float average = ((SCORE_0 + SCORE_1 + SCORE_2) / comments.size() + SCORE_2) / 2f;
-    String expected = "{\"score\":" + average + ",\"scoreAvailable\":true}\n";
+    String expected = "{\"id\":\"" + VIDEO_ID +
+        "\",\"score\":" + average +
+        ",\"scoreAvailable\":true}\n";
 
     Assert.assertEquals(expected, stringWriter.toString());
   }
 
   /**
    * If captions are available and comments are not, a sentiment score should still calculated and
-   * the score should be printed in a Json object. 
+   * the score should be printed in a Json object.
    */
   @Test
   public void onlyCaptionsPrintsVideoAnalysisJsonObject() throws IOException {
     List<String> comments = Arrays.asList();
     String captions = "foo. bar. foobar.";
-    
+
     when(requestMock.getParameter("video-id")).thenReturn(VIDEO_ID);
     when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
     when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
@@ -99,20 +101,22 @@ public final class SentimentServletTest {
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    String expected = "{\"score\":" + SCORE_0 + ",\"scoreAvailable\":true}\n";
+    String expected = "{\"id\":\"" + VIDEO_ID +
+        "\",\"score\":" + SCORE_0 +
+        ",\"scoreAvailable\":true}\n";
 
     Assert.assertEquals(expected, stringWriter.toString());
   }
 
   /**
    * If comments are available and captions are not, a sentiment score should still calculated and
-   * the score should be printed in a Json object. 
+   * the score should be printed in a Json object.
    */
   @Test
   public void onlyCommentsPrintsVideoAnalysisJsonObject() throws IOException {
     List<String> comments = Arrays.asList("foo","bar","foobar");
     String captions = "";
-    
+
     when(requestMock.getParameter("video-id")).thenReturn(VIDEO_ID);
     when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
     when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
@@ -124,27 +128,29 @@ public final class SentimentServletTest {
     sentimentServlet.doGet(requestMock, responseSpy);
 
     Float average = (SCORE_0 + SCORE_1 + SCORE_2) / comments.size();
-    String expected = "{\"score\":" + average + ",\"scoreAvailable\":true}\n";
+    String expected = "{\"id\":\"" + VIDEO_ID +
+        "\",\"score\":" + average +
+        ",\"scoreAvailable\":true}\n";
 
     Assert.assertEquals(expected, stringWriter.toString());
   }
 
   /**
    * If there's no comments or captions available to analyze, a Json object should still be printed
-   * but without a score value (becaues score == null) and scoreAvailable == false. 
+   * but without a score value (becaues score == null) and scoreAvailable == false.
    */
   @Test
   public void noCommentsOrCaptionsPrintsJsonObjectWithoutScore() throws IOException {
     List<String> comments = Arrays.asList();
     String captions = "";
-    
+
     when(requestMock.getParameter("video-id")).thenReturn(VIDEO_ID);
     when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
     when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
 
     sentimentServlet.doGet(requestMock, responseSpy);
-    
-    String expectedNoData = "{\"scoreAvailable\":false}\n";
+
+    String expectedNoData = "{\"id\":\"" + VIDEO_ID + "\",\"scoreAvailable\":false}\n";
 
     Assert.assertEquals(expectedNoData, stringWriter.toString());
   }
@@ -180,7 +186,9 @@ public final class SentimentServletTest {
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
-    String expected = "{\"score\":" + SCORE_0 + ",\"scoreAvailable\":true}\n";
+    String expected = "{\"id\":\"" + VIDEO_ID +
+        "\",\"score\":" + SCORE_0 +
+        ",\"scoreAvailable\":true}\n";
 
     verify(responseSpy).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
         "Comments could not be retrieved.");
@@ -194,7 +202,7 @@ public final class SentimentServletTest {
   public void languageServiceFailureSendsHttpResponseError() throws IOException {
     List<String> comments = Arrays.asList("foo","bar","foobar");
     String captions = "foo. bar. foobar.";
-    
+
     when(requestMock.getParameter("video-id")).thenReturn(VIDEO_ID);
     when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
     when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);

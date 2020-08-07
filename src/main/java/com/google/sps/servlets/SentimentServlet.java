@@ -3,7 +3,6 @@ package com.google.sps.servlets;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.gax.rpc.ApiException;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.google.sps.data.VideoAnalysis;
 import java.io.IOException;
 import java.lang.InterruptedException;
@@ -64,6 +63,7 @@ public class SentimentServlet extends HttpServlet {
 
     if (commentsList.isEmpty() && captions.isEmpty()) {
       VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+        .setId(videoId)
         .setScore(null)
         .setScoreAvailable(false)
         .build();
@@ -102,6 +102,7 @@ public class SentimentServlet extends HttpServlet {
     float score = determineSentimentScore(commentsList, captions, commentsScore, captionsScore);
 
     VideoAnalysis videoAnalysis = new VideoAnalysis.Builder()
+        .setId(videoId)
         .setScore(score)
         .setScoreAvailable(true)
         .build();
