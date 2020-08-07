@@ -120,10 +120,9 @@ public final class SentimentServletTest {
     when(requestMock.getParameter("video-id")).thenReturn(VIDEO_ID);
     when(commentServiceMock.getCommentsFromId(VIDEO_ID)).thenReturn(comments);
     when(captionServiceMock.getCaptionFromId(VIDEO_ID)).thenReturn(captions);
-    when(sentimentAnalysisMock.calculateSentimentScore(anyString()))
-        .thenReturn(SCORE_0)
-        .thenReturn(SCORE_1)
-        .thenReturn(SCORE_2);
+    when(sentimentAnalysisMock.calculateSentimentScore("foo")).thenReturn(SCORE_0);
+    when(sentimentAnalysisMock.calculateSentimentScore("bar")).thenReturn(SCORE_1);
+    when(sentimentAnalysisMock.calculateSentimentScore("foobar")).thenReturn(SCORE_2);
 
     sentimentServlet.doGet(requestMock, responseSpy);
 
