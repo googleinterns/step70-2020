@@ -1,8 +1,0 @@
-indexes:
-
-- kind: Video
-  properties:
-    - name: sentiment
-      direction: desc
-    - name: numSearches
-      direction: desc
